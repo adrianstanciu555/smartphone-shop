@@ -17,7 +17,8 @@
 
 - **Launch Targets:**
   - Expected orders at launch date: 1,000.
-  - Minimum initial stock: 2,000 smartphones and 5,000 accessories.
+  - Minimum initial stock at launch: 2,000 smartphones and 5,000 accessories (total units across all products).
+  - Stock covers the 1,000 expected launch orders with a safety margin; low-stock alerts apply once stock drops below a defined threshold.
 
   
 
@@ -147,8 +148,29 @@
 
 ## Sample Data & User Roles
 
-- **Test Accounts:** [Available user types]
+- **Test Accounts:** (synthetic only, no real customer data; credentials kept in a secrets manager, not in the repo)
+  - Visitor: no account, catalog browsing only.
+  - Customer (new): freshly registered, email verified, no orders.
+  - Customer (existing): verified, saved address, order history (paid, shipped, delivered, cancelled, returned).
+  - Customer (unverified): registered but email not verified.
+  - Customer (locked): account locked after failed logins.
+  - Customer (return window): delivered order at day 29 and day 31, to test the 30-day rule.
+  - Catalog/inventory manager: manages products, prices, and stock.
+  - Support/fulfillment agent: processes orders, returns, and refunds.
+  - Admin: full back office access, including user and role management and audit log review.
+  - Second customer: used to verify access to another user's data is blocked (IDOR).
 
-- **Data Sets:** [Test data availability]
+- **Data Sets:**
+  - Catalog: ~200 smartphones and ~800 accessories (multiple brands, prices, categories, compatibility), including a product with no stock and one with 1 unit left.
+  - Stock: launch-scale set of 2,000 smartphone units and 5,000 accessory units (spread across the catalog products) on the performance environment; Dev and Staging use a smaller set.
+  - Users: ~10k generated customers for load tests, plus seed data created via API or database scripts and reset before each run.
+  - Payments: Stripe test cards for success, declined, insufficient funds, 3-D Secure, and timeout.
+  - Addresses: valid and invalid samples, including special characters and international formats.
+  - Orders: sample orders in every status.
+  - Security: payloads for injection, XSS, and tampered prices.
 
-- **Environments:** [Dev/staging/prod access]
+- **Environments:**
+  - Dev: developers' daily work, mocked third parties, small data set; QA has full access.
+  - Staging: production-like, Stripe test mode and courier sandbox, anonymized or synthetic data; used for E2E, API, DAST, and nightly runs.
+  - Performance: Staging-sized infrastructure with launch-scale data; used for k6 tests only.
+  - Production: no test data; read-only monitoring and a post-release smoke test with a dedicated test account.

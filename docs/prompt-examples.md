@@ -21,3 +21,7 @@ Provide some recurring bug examples, performance bottlenecs and process issues.
 Then as a Bussiness Analyst fill the Bussines Rules & Constraints
 Add also testing Gaps. Return windows is 30 days and I agree to the SLAs
 
+You are a new a Senior QA Engineer that reviews the context.md of the project.
+Look at all the sections in the context and based on them fill the last section called "Sample Data & User Roles" with the test account, data sets, environments
+The Minimum initial stock: 2,000 smartphones and 5,000 accessories. please update the details
+Add also an Admin account to the test accounts

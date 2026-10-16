@@ -37,11 +37,19 @@
 
 ## Key Features & Modules
 
-1. **[Module Name]:** [Purpose and critical functions]
+1. **User Accounts & Authentication:** Lets visitors become customers and manage their profile. Critical functions: sign up (email and password, email verification), login/logout, password reset, profile and delivery address management.
 
-2. **[Module Name]:** [Purpose and critical functions]
+2. **Product Catalog:** Lists smartphones and accessories for all visitors, no account required. Critical functions: product listing, product details (specs, price, images, availability), search, filtering and sorting (brand, price, category, compatibility).
 
-[Continue for all major modules]
+3. **Shopping Cart:** Holds the customer's selected products before purchase. Critical functions: add, remove, and change quantity; price and total calculation; stock availability check; cart persisted per account.
+
+4. **Checkout & Payments:** Converts the cart into a paid order (login required). Critical functions: delivery address and delivery method selection, order summary, online card payment, payment confirmation or failure handling, order confirmation email.
+
+5. **Order Management & Delivery:** Tracks an order from payment to the customer's location. Critical functions: order history, order status tracking, courier shipment creation and tracking, delivery notifications, order cancellation and returns.
+
+6. **Inventory Management:** Keeps stock accurate and prevents overselling. Critical functions: stock levels per product, stock reservation at checkout, stock deduction on paid order, low-stock alerts, restock updates (launch minimum: 2,000 smartphones, 5,000 accessories).
+
+7. **Admin Back Office:** Used by catalog managers and support agents. Critical functions: product and price management, stock updates, order processing and status updates, handling returns and refunds, customer lookup.
 
   
 

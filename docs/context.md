@@ -5,11 +5,14 @@
 
 ## Project Overview
 
-- **Purpose:** [Brief description]
+- **Purpose:** Online store for buying smartphones and compatible accessories (cases, chargers, cables, earbuds, screen protectors). Covers catalog browsing, search and filtering, cart, checkout with online payment, order tracking, and returns.
 
-- **Domain:** [Industry/business area]
+- **Domain:** Retail e-commerce, consumer electronics (B2C, web-first).
 
-- **Users:** [Primary user types and volumes]
+- **Users:**
+  - Customers (guest and registered): the majority; assumed ~10k monthly active users and ~500 orders/day at launch (to be confirmed).
+  - Catalog and inventory managers: a few; manage products, prices, and stock.
+  - Support and fulfillment agents: a few; handle orders, returns, and refunds.
 
   
 

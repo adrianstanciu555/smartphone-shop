@@ -1,4 +1,4 @@
-
+﻿
 # Project Context for AI Assistance
 
   
@@ -55,37 +55,93 @@
 
 ## Current Testing Approach
 
-- **Manual Testing:** [Scope and tools]
+- **Manual Testing:** Exploratory and cross-device checks on Staging; payment edge cases (declined card, 3-D Secure); back office flows (returns, refunds, stock).
 
-- **Automation:** [Coverage and frameworks]
+- **Automation:** Runs in GitHub Actions on every PR and nightly.
+  - Unit: Jest (pricing, stock reservation, order statuses).
+  - API: Postman + Newman (all modules, negative and authorization cases).
+  - UI/E2E: Playwright + TypeScript (sign up, login, search, cart, checkout, tracking, returns).
+  - Reporting: combined Allure report.
 
-- **Performance:** [Tools and benchmarks]
+- **Performance:** k6 on Staging, plus Lighthouse CI for the frontend.
+  - Load, stress, spike, and soak tests; concurrency test on last-unit purchases.
+  - Targets: p95 API < 500 ms, LCP < 2.5 s, checkout success > 99%.
 
-- **Security:** [Current practices]
-
+- **Security:** Aligned with OWASP Top 10.
+  - CI scans: SAST, dependencies, containers (Trivy), secrets.
+  - DAST: OWASP ZAP on Staging.
+  - Manual-style checks: auth and JWT, access to other users' data (IDOR), injection, price tampering, payment webhooks.
+  - Penetration test before launch.
   
 
 ## Pain Points & Known Issues
 
-- **Recurring Bugs:** [Pattern analysis]
+- **Recurring Bugs:**
+  - Overselling: two customers buy the last unit, or stock is not released after an abandoned or failed payment.
+  - Cart totals wrong after price, discount, or stock changes.
+  - Duplicate orders or charges from double-clicks and payment webhook retries.
+  - Order stays in "Pending" after a successful payment (missed webhook).
+  - Search and filters return wrong results (compatibility, out-of-stock items).
+  - Address and phone validation rejecting valid input; emails not delivered.
 
-- **Performance Bottlenecks:** [Identified areas]
+- **Performance Bottlenecks:**
+  - Catalog listing and search with many filters.
+  - Large product images slowing page load (LCP).
+  - Checkout: stock-reservation locks on popular products under concurrent load.
+  - Slow third-party calls (payment, courier) blocking requests.
+  - Database connection exhaustion at launch peaks.
 
-- **Testing Gaps:** [Uncovered scenarios]
+- **Testing Gaps:**
+  - Payment failure paths: webhook delays, retries, and out-of-order events.
+  - Concurrent purchases of the last unit across multiple sessions.
+  - Courier and email/SMS integrations (sandboxes are limited).
+  - Back office and admin flows have little automation.
+  - Returns and refunds across the 30-day window boundary.
+  - Accessibility and mobile browser coverage.
+  - Production-scale data volumes in performance tests.
 
-- **Process Issues:** [Workflow problems]
+- **Process Issues:**
+  - Stock and price data differ between environments, so bugs are not reproducible.
+  - Third-party sandboxes (Stripe, courier) are unstable or limited.
+  - Late requirement changes without updated tests or API contracts.
+  - No agreed definition of done for performance and security checks.
 
   
 
 ## Business Rules & Constraints
 
-- **Critical User Journeys:** [Must-work scenarios]
+- **Critical User Journeys:**
+  - Sign up, verify email, log in.
+  - Browse, search, and filter products (no account).
+  - Add to cart, checkout, pay, receive confirmation.
+  - Track order until delivery.
+  - Cancel or return an order and receive a refund.
 
-- **Compliance Requirements:** [Regulatory needs]
+- **Business Rules:**
+  - Only registered, logged-in users can add to cart and buy; browsing is open.
+  - Stock is reserved at checkout and released if payment fails or times out.
+  - An out-of-stock product cannot be purchased.
+  - Price is confirmed server-side at checkout, never trusted from the client.
+  - Orders can be cancelled before shipment; returns are allowed within 30 days of delivery.
+  - Refunds go back to the original payment method.
 
-- **Performance SLAs:** [Speed/uptime requirements]
+- **Compliance Requirements:**
+  - GDPR: consent, data access, export, and deletion for customer accounts.
+  - PCI DSS: card data handled only by the payment provider (Stripe).
+  - Consumer protection: price with taxes shown, right of withdrawal, clear terms and privacy policy.
+  - Cookie consent.
 
-- **Security Policies:** [Data protection rules]
+- **Performance SLAs:**
+  - Availability 99.9%.
+  - p95 API response < 500 ms; catalog page LCP < 2.5 s.
+  - Checkout success rate > 99%.
+  - Capacity: 1,000 orders at launch, ~10k monthly active users.
+
+- **Security Policies:**
+  - HTTPS everywhere; passwords hashed (Argon2); strong password rules.
+  - Customers access only their own data; role-based access for staff.
+  - No card data stored; personal data encrypted at rest.
+  - Rate limiting and account lockout on login; audit log for admin actions.
 
   
 

@@ -25,3 +25,7 @@ You are a new a Senior QA Engineer that reviews the context.md of the project.
 Look at all the sections in the context and based on them fill the last section called "Sample Data & User Roles" with the test account, data sets, environments
 The Minimum initial stock: 2,000 smartphones and 5,000 accessories. please update the details
 Add also an Admin account to the test accounts
+
+You are a Technical Arhitect and based on the context file suggest a mindmap of the project that is easily and simple to understand.
+The goal is to populate the mindmap.md file
+The format is like a tree to see how the skelet of the project witll look

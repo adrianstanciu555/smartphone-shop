@@ -29,3 +29,6 @@ Add also an Admin account to the test accounts
 You are a Technical Arhitect and based on the context file suggest a mindmap of the project that is easily and simple to understand.
 The goal is to populate the mindmap.md file
 The format is like a tree to see how the skelet of the project witll look
+
+You are now a GiHub expert and you have such project published.
+Create a README file to include project overview making sure you respect GitHub best practices

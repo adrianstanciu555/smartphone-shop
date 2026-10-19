@@ -1,0 +1,44 @@
+Title: [STORY-1347] Apply Black Friday coupon code "BF2026" at checkout
+
+As a Product Owner, I want to start a Black Friday campaign, so that we increase our revenue on the "Smartphone-Shop" website.
+The Black Friday campaign has a "BF2026" coupon code - 20% discount already applied at checkout.
+The period of the promotion is between 2026-11-27 00:00 to 2026-11-30 23:59:59 (shop local time, Europe/Bucharest).
+The coupon code can be applied only once for 1 Quantity of that product on one user_ID.
+Example: you can purchase only 1 Samsung Galaxy S26 Ultra 512GB Smartphone with coupon code: "BF2026" on user_ID=5456.
+
+Data Mapping:
+Promotion name: BlackFriday2026
+Coupon code : "BF2026" is a 20% discount from the total amount at checkout
+Period: between 2026-11-27 00:00 to 2026-11-30 23:59:59 (shop local time, Europe/Bucharest).
+Users: any registered users on the Smartphone-Shop
+Usage Limit per Customer: Coupon code is applied per 1 QTY of the same product for only 1 user_ID.
+Validation: On Checkout "BF2026" is not case sensitive, all other coupon codes are not available.
+
+AC1: Discount is applied
+GIVEN that I'm a User
+WHEN I am at the Checkout page
+AND I purchase 1QTY of product
+I apply coupon code "BF2026"
+THEN The 20% discount is applied for the total amount.
+
+AC2: Discount is not applied for two units of same products
+GIVEN that I'm a User
+WHEN I am at the Checkout page
+AND I purchase 2 units of the same product with coupon code "BF2026"
+THEN The 20% discount is applied only on 1 unit
+AND the second unit of the same product has the full amount price.
+
+AC3: Any other coupon code is rejected
+GIVEN that I'm an User at the Checkout page
+WHEN I enter any coupon code other than “BF2026” (e.g., “BF2025”, “SAVE10”),
+THEN the system displays “This coupon is not valid” and no discount is applied.
+
+AC4: Guest users cannot use the coupon
+GIVEN I'm a Guest
+WHEN they try to apply “BF2026”,
+THEN the system displays “Please log in to use this coupon” and no discount is applied.
+
+AC5: Successful order
+GIVEN that I'm a User that completes the payment with “BF2026” applied,
+WHEN the order is confirmed,
+THEN the system stores a redemption record, with coupon code “BF2026”, user_ID, product_ID, quantity discounted = 1, discount amount, and a UTC timestamp.

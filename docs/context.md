@@ -5,7 +5,15 @@
 
 ## Project Overview
 
-- **Purpose:** Online store for buying smartphones and compatible accessories (cases, chargers, cables, earbuds, screen protectors). Covers catalog browsing (no account required), search and filtering, cart, checkout with online payment (account required), order tracking, and returns.
+- **Purpose:** Online store for buying smartphones and compatible accessories (cases, chargers, cables, headphones, screen protectors).
+Our best selling smartphones brands are: Samsung, Apple, Google, Motorola, Xiaomi, OPPO, HONOR, Sony, Vivo, OnePlus (Android and iOS).
+The chargers are from their manufacturer brands or third-party: Anker, Belkin, Spigen, Techsuit, UGREEN, HOCO, McDodo.
+The cables and adapters are made by their own brand or by third-parties: Baseus, Anker, Spigen, McDodo, HOCO, Ringke.
+Phone cases are made by their our brands or third-party: Techsuit, Nelkin, Nillkin, Basesu, McDodo, Spigen, Ringle, PanzerGlass.
+Screen protectorts are their own smarphone brand or third-party like: Techsuit, HOCO, Nillkin, Belkin, Spigen, Ringke, Urban Armor Gear, PanzerGlass.
+Bluetooth headphones brands include: Samsung, Apple, Xiaomi, Google, Motorola, JBL, Basesu, HOCO, Philips, Anker, McDodo.
+
+ Covers catalog browsing (no account required), search and filtering, cart, checkout with online payment (account required), order tracking, and returns.
 
 - **Domain:** Retail e-commerce, consumer electronics (B2C, web-first).
 

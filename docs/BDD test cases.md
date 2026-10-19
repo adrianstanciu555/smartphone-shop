@@ -153,11 +153,10 @@ Feature: [Short title of the user story]
 6. What message is shown when the code is used outside the promotion period, or when the user already redeemed the coupon for the same product?
 7. Is the code trimmed for spaces? Which characters are allowed?
 8. Is the message in AC3 the same for empty, unknown, and expired codes?
-9. After login, is the cart preserved and the coupon re-applied?
-10. If payment fails or the order is cancelled/refunded, is the coupon released and the redemption record removed?
-11. Is the 20% calculated before or after VAT? Is shipping excluded? What is the rounding rule?
-12. Does the coupon combine with other discounts or sale prices?
-13. When is the redemption record stored (payment or order confirmation)?
+9. If payment fails or the order is cancelled/refunded, is the coupon released and the redemption record removed?
+10. Is the 20% calculated before or after VAT? Is shipping excluded? What is the rounding rule?
+11. Does the coupon combine with other discounts or sale prices?
+12. When is the redemption record stored (payment or order confirmation)?
 
 *Assumptions:*
 - Eligible products are all Android and iOS smartphones and their accessories (cases, screen protectors, cables, chargers).
@@ -171,7 +170,7 @@ Feature: [Short title of the user story]
 
 ## Detailed Analysis
 
-**Actor:** Registered user (customer), Guest, Product Owner (business owner of the campaign)
+**Actor:** Registered user (customer), Product Owner (business owner of the campaign)
 **Goal:** The customer gets 20% off one unit of a product by applying coupon "BF2026" at Checkout. The Product Owner increases revenue during the Black Friday campaign.
 **Preconditions:**
 - The current shop time (Europe/Bucharest) is between 2026-11-27 00:00:00 and 2026-11-30 23:59:59.
@@ -189,12 +188,10 @@ Feature: [Short title of the user story]
 **Alternate Flows:**
 - Qty 2 of the same product: only 1 unit is discounted.
 - Several different products in the cart: each product gets 1 discounted unit.
-- Guest logs in after the message and applies the coupon again.
 - The user changes the quantity or removes the coupon before paying.
 
 **Exception Flows:**
 - Invalid code: "This coupon is not valid".
-- Guest: "Please log in to use this coupon".
 - Outside the promotion period: the coupon is rejected.
 - Coupon already used by the user for that product: the coupon is rejected.
 - Payment fails or is cancelled: no redemption record and no usage consumed.
@@ -358,34 +355,9 @@ Feature: Apply Black Friday coupon code "BF2026" at checkout (STORY-1347)
       | <script>alert(1)</script> |
       | 5000 characters string    |
 
-  # ---------- AC4: Guest users (3) ----------
+  # ---------- AC4: Redemption record (3) ----------
 
-  @High @Negative @RoleBased @AC4
-  Scenario: Guest cannot use the coupon
-    Given I am a guest at the Checkout page with 1 unit of a product
-    When I apply the coupon code "BF2026"
-    Then the message "Please log in to use this coupon" is displayed
-    And no discount is applied
-
-  @Medium @Alternate @AC4
-  Scenario: Guest logs in and applies the coupon
-    Given I am a guest at the Checkout page with 1 unit of a product
-    And I saw the message "Please log in to use this coupon"
-    When I log in as a registered user
-    And I apply the coupon code "BF2026"
-    Then my cart is preserved
-    And the 20% discount is applied to the unit
-
-  @High @Security @AC4
-  Scenario: Guest cannot apply the coupon by calling the API directly
-    Given I am not authenticated
-    When I send a request to apply "BF2026" to the coupon API
-    Then the response is unauthorized
-    And no discount is applied
-
-  # ---------- AC5: Redemption record (3) ----------
-
-  @High @HappyPath @AC5
+  @High @HappyPath @AC4
   Scenario: Redemption record is stored after a successful order
     Given I am logged in as the registered user with user_ID 5456
     And "BF2026" is applied to 1 unit of the product with product_ID 101 priced 1000.00
@@ -399,7 +371,7 @@ Feature: Apply Black Friday coupon code "BF2026" at checkout (STORY-1347)
       | discount amount     | 200.00      |
       | timestamp           | current UTC |
 
-  @Medium @Edge @AC5
+  @Medium @Edge @AC4
   Scenario: Timestamp is stored in UTC and only 1 record is stored for quantity 2
     Given the shop time is 2026-11-28 12:00:00 (Europe/Bucharest, UTC+2)
     And "BF2026" is applied to a product with quantity 2
@@ -407,7 +379,7 @@ Feature: Apply Black Friday coupon code "BF2026" at checkout (STORY-1347)
     Then 1 redemption record is stored with quantity discounted = 1
     And the stored timestamp is 2026-11-28 10:00:00 UTC
 
-  @High @Exception @AC5
+  @High @Exception @AC4
   Scenario: Failed payment does not store a redemption and does not consume the coupon
     Given "BF2026" is applied to 1 unit of a product
     When the payment fails
@@ -467,6 +439,61 @@ Feature: Apply Black Friday coupon code "BF2026" at checkout (STORY-1347)
     When they apply "BF2026" at the same time
     Then each request responds within the agreed time
     And every successful order stores exactly one redemption record
+
+  # ---------- Additional scenarios (5) ----------
+
+  @Medium @Alternate @AC1
+  Scenario: User removes the coupon and the original price is restored
+    Given I am logged in as a registered user with user_ID 5456
+    And my cart contains 1 unit of "Samsung Galaxy S26 Ultra 512GB" priced 1000.00
+    And I applied the coupon code "BF2026" and the order total shows 800.00
+    When I remove the coupon at Checkout
+    Then the discount line disappears
+    And the order total shows 1000.00
+    And I can apply "BF2026" again
+
+  @High @Exception @AC4
+  Scenario: Payment webhook retry does not create a duplicate order or redemption
+    Given I am logged in as a registered user with user_ID 5456
+    And "BF2026" is applied to 1 unit of the product with product_ID 101 priced 1000.00
+    When I pay and Stripe charges 800.00
+    And the payment confirmation webhook is delivered twice
+    Then only 1 order is created with the status "Paid"
+    And only 1 redemption record is stored with quantity discounted = 1
+    And the amount charged in Stripe equals the discounted order total of 800.00
+
+  @Medium @Exception @UsageLimit
+  Scenario: Cancelling the order before shipment releases the coupon
+    Given I am logged in as a registered user with user_ID 5456
+    And I completed an order with "BF2026" for the product with product_ID 101
+    And the order has not been shipped
+    When I cancel the order and the refund of 800.00 goes to the original payment method
+    Then the redemption record is flagged as cancelled
+    And I can apply "BF2026" to the product with product_ID 101 in a new order
+    # Assumption: to be confirmed with the PO (see the usage limit question on cancellation, refund, and return)
+
+  @High @Security @RoleBased
+  Scenario Outline: Coupon API rejects requests without a valid login token
+    Given the shop time is 2026-11-28 12:00:00
+    And a cart for user_ID 5456 contains 1 unit of a product
+    When I send a request to apply "BF2026" to the coupon API with <authorization>
+    Then the response is 401
+    And no discount is applied to the cart
+
+    Examples:
+      | authorization                        |
+      | no Authorization header              |
+      | an expired access token              |
+      | the access token of another user_ID  |
+
+  @Medium @Security @Negative
+  Scenario: Repeated invalid coupon attempts are rate limited
+    Given I am logged in as a registered user with 1 unit of a product at Checkout
+    When I apply 10 different invalid coupon codes within 1 minute
+    Then further attempts are blocked with a "too many attempts" message
+    And no discount is applied
+    And after the limit window I can apply "BF2026" and receive the 20% discount
+    # Assumption: the limit and the window are to be confirmed (see the invalid attempts question)
 
   # ---------- Regression (1) ----------
 

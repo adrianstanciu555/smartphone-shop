@@ -148,21 +148,14 @@ Review the checklist and questions for completeness and clarity. If anything is 
 - [ ] [AC3] Check that an invalid code attempt does not remove an already applied valid "BF2026"
 - [ ] [AC3] Check that the message text matches exactly “This coupon is not valid” (and its localization)
 
-#### AC4 – Guest users
-- [ ] [AC4] Check that a guest applying "BF2026" sees “Please log in to use this coupon” and no discount is applied
-- [ ] [AC4] Check that a guest applying an invalid code sees “This coupon is not valid” (or the login message, per the answer)
-- [ ] [AC4] Check that after login or registration, the cart is preserved and the coupon can be applied
-- [ ] [AC4] Check that a user whose session expired at Checkout is treated as a guest
-- [ ] [AC4] Check that a guest cannot get the discount by calling the coupon API directly
-
-#### AC5 – Successful order and redemption record
-- [ ] [AC5] Check that after payment and order confirmation, a redemption record is stored with coupon code "BF2026", the correct user_ID, product_ID, quantity discounted = 1, the discount amount, and a UTC timestamp
-- [ ] [AC5] Check that the discount amount in the record equals the discount shown in the order and the invoice
-- [ ] [AC5] Check that the UTC timestamp is correct (Europe/Bucharest local time minus 2 hours in November)
-- [ ] [AC5] Check that with qty 2 only one redemption record (quantity discounted = 1) is stored
-- [ ] [AC5] Check that with a cart of several products, one record per discounted product is stored
-- [ ] [AC5] Check that no redemption record is stored for failed, cancelled, or abandoned orders
-- [ ] [AC5] Check that the order confirmation page, email, and order history show the discounted price
+#### AC4 – Successful order and redemption record
+- [ ] [AC4] Check that after payment and order confirmation, a redemption record is stored with coupon code "BF2026", the correct user_ID, product_ID, quantity discounted = 1, the discount amount, and a UTC timestamp
+- [ ] [AC4] Check that the discount amount in the record equals the discount shown in the order and the invoice
+- [ ] [AC4] Check that the UTC timestamp is correct (Europe/Bucharest local time minus 2 hours in November)
+- [ ] [AC4] Check that with qty 2 only one redemption record (quantity discounted = 1) is stored
+- [ ] [AC4] Check that with a cart of several products, one record per discounted product is stored
+- [ ] [AC4] Check that no redemption record is stored for failed, cancelled, or abandoned orders
+- [ ] [AC4] Check that the order confirmation page, email, and order history show the discounted price
 
 #### Promotion period
 - [ ] [Period] Check that "BF2026" is accepted at 2026-11-27 00:00:00 and rejected at 2026-11-26 23:59:59 (shop local time)
@@ -192,14 +185,14 @@ Review the checklist and questions for completeness and clarity. If anything is 
 
 #### Environment / Configuration
 - [ ] [Env] Check that the test environment can set the system date inside and outside of the period
-- [ ] [Env] Check that test data exist: registered users, a guest session, Android/iOS products, and each accessory type
+- [ ] [Env] Check that test data exist: registered users, Android/iOS products, and each accessory type
 - [ ] [Env] Check that the redemption records can be viewed (DB, API, or report) in the test environment
 - [ ] [Env] Check that the coupon is not available in the production environment before the start date
 
 #### Regression
 - [ ] [Regression] Check that checkout without a coupon still calculates totals, VAT, shipping, and rounding correctly
 - [ ] [Regression] Check that existing promotions and discounts still work
-- [ ] [Regression] Check that guest checkout, login, and registration still work
+- [ ] [Regression] Check that login and registration still work
 - [ ] [Regression] Check that order history, invoices, emails, and order cancellation/refund still show correct amounts
 - [ ] [Regression] Check that reports and analytics still work with the new redemption records
 
@@ -225,10 +218,6 @@ Review the checklist and questions for completeness and clarity. If anything is 
 - Is 2026-11-30 23:59:59 inclusive, and which clock is used to check it? Is the check done at coupon entry, order submission, or payment?
 - What happens when the checkout starts inside the period and the payment is completed after it ends?
 
-#### Guest flow
-- After login or registration, is the cart preserved and the coupon re-applied automatically?
-- Does a guest who enters an invalid code see the invalid-coupon or the login message?
-
 #### Pricing
 - Is the 20% calculated before or after VAT? Is shipping excluded? What is the rounding rule and currency?
 - Does the coupon combine with existing sale prices, discounts, or other vouchers?
@@ -245,5 +234,24 @@ Review the checklist and questions for completeness and clarity. If anything is 
 
 #### Story quality
 - The description contains typos ("smarphone", "accesories", "casses", "charges") and the AC1 list omits screen protectors. Can the story be updated?
-- "User", "registered user", and "Guest" are used inconsistently. Can the roles be defined once?
+- "User" and "registered user" are used inconsistently. Can the roles be defined once?
+```
+
+---
+
+## Example: STORY-1347 – Short checklist (5 items)
+
+```markdown
+
+### Test Checklist for User Story: [STORY-1347] Apply Black Friday coupon code "BF2026" at checkout
+
+- [ ] [AC1/AC2] Check that a logged-in customer (user_ID 5456) with 2 units of "Samsung Galaxy S26 Ultra 512GB" at 1000.00 each gets 20% off only 1 unit after applying "BF2026" (any letter case, such as "bf2026") at Checkout. The discount is 200.00, the second unit stays at 1000.00, the total is 1800.00, and the cart, order summary and Stripe amount all match.
+
+- [ ] [AC3] Check that "BF2025", "SAVE10", an empty code, and injection strings (`' OR '1'='1`, `<script>`) show "This coupon is not valid" and apply no discount. Also check that a failed attempt does not remove an already applied valid "BF2026".
+
+- [ ] [Period] Check that the server time (Europe/Bucharest, UTC+2) decides validity: accepted at 2026-11-27 00:00:00 and 2026-11-30 23:59:59, rejected at 2026-11-26 23:59:59 and 2026-12-01 00:00:00, and not affected by the user's device clock.
+
+- [ ] [AC4/Usage limit] Check that after payment and order confirmation exactly 1 redemption record is stored (coupon code "BF2026", user_ID, product_ID, quantity discounted = 1, discount amount 200.00, UTC timestamp). Also check that a second order by the same user for the same product is rejected, that a failed or cancelled payment stores no record, and that a double-click on "Pay" or a payment webhook retry does not create a duplicate.
+
+- [ ] [Security] Check that the discount cannot be changed by tampering with the request (price, discount percent, quantity, user_ID). The server must recalculate the price, reject unauthenticated or expired-token coupon requests, and rate limit repeated invalid attempts.
 ```

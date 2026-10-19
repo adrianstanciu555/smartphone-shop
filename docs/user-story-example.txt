@@ -34,12 +34,7 @@ GIVEN that I'm an User at the Checkout page
 WHEN I enter any coupon code other than “BF2026” (e.g., “BF2025”, “SAVE10”),
 THEN the system displays “This coupon is not valid” and no discount is applied.
 
-AC4: Guest users cannot use the coupon
-GIVEN I'm a Guest
-WHEN they try to apply “BF2026”,
-THEN the system displays “Please log in to use this coupon” and no discount is applied.
-
-AC5: Successful order
+AC4: Successful order
 GIVEN that I'm a User that completes the payment with “BF2026” applied,
 WHEN the order is confirmed,
 THEN the system stores a redemption record, with coupon code “BF2026”, user_ID, product_ID, quantity discounted = 1, discount amount, and a UTC timestamp.

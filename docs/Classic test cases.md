@@ -317,3 +317,155 @@ Steps, Expected Results:
 | 1  | Add 1 unit to the cart, open Checkout and apply "BF2026". | The discount is 20.00 and the total is 80.00. |
 | 2  | Change the quantity to 3. | Only 1 unit stays discounted; the total is 280.00. |
 | 3  | Change the quantity back to 1. | The remaining unit stays discounted; the total is 80.00. |
+
+---
+
+**Test Case ID**: TC08
+
+**Title**: Any other coupon code is rejected
+
+**Priority**: High
+
+**Objective**: Verify that invalid codes show the error message and give no discount (AC3)
+
+**Preconditions**:
+- The shop time is 2026-11-28 12:00 (Europe/Bucharest)
+- The user is registered and logged in
+- The cart has 1 unit of a product priced 100.00
+
+Test Data:
+- Codes: "BF2025", "SAVE10", "BF-2026", "BF 2026", empty, `' OR '1'='1`, `<script>alert(1)</script>`
+
+Steps, Expected Results:
+
+| No | Step | Expected Result |
+|----|------|----------------|
+| 1  | Open Checkout and enter "BF2025", then click Apply. | The message "This coupon is not valid" is displayed and the total stays 100.00. |
+| 2  | Repeat step 1 with "SAVE10", "BF-2026" and "BF 2026". | The same message is displayed each time and no discount is applied. |
+| 3  | Click Apply with an empty field. | A validation message is displayed and no discount is applied. |
+| 4  | Enter `' OR '1'='1` and click Apply. | The message "This coupon is not valid" is displayed, with no server error. |
+| 5  | Enter `<script>alert(1)</script>` and click Apply. | The message is displayed, no script is executed and the input is escaped. |
+| 6  | Apply "BF2026", then apply "BF2025". | The invalid message is displayed and the valid "BF2026" discount (20.00) stays applied. |
+
+---
+
+**Test Case ID**: TC09
+
+**Title**: Redemption record is stored after a successful order
+
+**Priority**: High
+
+**Objective**: Verify the content of the redemption record after payment (AC4)
+
+**Preconditions**:
+- The shop time is 2026-11-28 12:00:00 (Europe/Bucharest, UTC+2)
+- The user is registered and logged in and has not used the coupon before
+- QA can read the redemption records (DB or API)
+- Stripe test mode is used
+
+Test Data:
+- user_ID: 5456
+- Product: Samsung Galaxy S26 Ultra 512GB, product_ID 101, price 1000.00, qty 1
+- Stripe test card: success
+- Coupon: BF2026
+
+Steps, Expected Results:
+
+| No | Step | Expected Result |
+|----|------|----------------|
+| 1  | Add the product to the cart, open Checkout and apply "BF2026". | The discount is 200.00 and the total is 800.00. |
+| 2  | Pay with the Stripe success test card. | The payment is successful and the order confirmation page is displayed. |
+| 3  | Check the order history and the confirmation email. | The order shows the discounted total of 800.00. |
+| 4  | Read the redemption records for user_ID 5456. | Exactly 1 record exists with coupon code "BF2026", user_ID 5456, product_ID 101, quantity discounted 1, discount amount 200.00. |
+| 5  | Check the timestamp of the record. | The timestamp is stored in UTC (about 2026-11-28 10:00:00 UTC). |
+
+---
+
+**Test Case ID**: TC10
+
+**Title**: The same user cannot reuse the coupon for the same product, another user can
+
+**Priority**: High
+
+**Objective**: Verify the usage limit per user_ID and product
+
+**Preconditions**:
+- The shop time is within the promotion period
+- User A (user_ID 5456) already completed an order with "BF2026" for product_ID 101
+- User B (user_ID 7001) has not used the coupon
+
+Test Data:
+- Product: Samsung Galaxy S26 Ultra 512GB, product_ID 101, price 1000.00
+- Coupon: BF2026
+
+Steps, Expected Results:
+
+| No | Step | Expected Result |
+|----|------|----------------|
+| 1  | Log in as user A, add 1 unit of product_ID 101 and open Checkout. | The total is 1000.00. |
+| 2  | Apply "BF2026". | The coupon is rejected with a message (text to be confirmed) and no discount is applied. |
+| 3  | Add 1 unit of a different product (product_ID 205, charger 50.00) and apply "BF2026". | Per the agreed rule, the charger gets 10.00 off (1 discounted unit per product). |
+| 4  | Log out, log in as user B, add 1 unit of product_ID 101 and apply "BF2026". | The 20% discount of 200.00 is applied. |
+| 5  | Log in as user A again in another browser and try to apply "BF2026" for product_ID 101. | The coupon is rejected, so the limit follows the user_ID and not the browser or session. |
+
+---
+
+**Test Case ID**: TC11
+
+**Title**: Promotion period boundaries
+
+**Priority**: High
+
+**Objective**: Verify that the coupon is valid only between 2026-11-27 00:00:00 and 2026-11-30 23:59:59 (Europe/Bucharest)
+
+**Preconditions**:
+- The test environment allows setting the server date and time
+- The user is registered and logged in, and has not used the coupon
+- The cart has 1 unit of a product priced 100.00
+- The user's device clock is set to a date inside the period
+
+Test Data:
+- Server times: 2026-11-26 23:59:59, 2026-11-27 00:00:00, 2026-11-30 23:59:59, 2026-12-01 00:00:00
+- Coupon: BF2026
+
+Steps, Expected Results:
+
+| No | Step | Expected Result |
+|----|------|----------------|
+| 1  | Set the server time to 2026-11-26 23:59:59 and apply "BF2026". | The coupon is rejected and no discount is applied. |
+| 2  | Set the server time to 2026-11-27 00:00:00 and apply "BF2026". | The coupon is accepted and the discount is 20.00. |
+| 3  | Remove the coupon, set the server time to 2026-11-30 23:59:59 and apply "BF2026". | The coupon is accepted and the discount is 20.00. |
+| 4  | Remove the coupon, set the server time to 2026-12-01 00:00:00 and apply "BF2026". | The coupon is rejected and no discount is applied. |
+| 5  | Keep the server time at 2026-12-05 and set the device clock to 2026-11-28, then apply "BF2026". | The coupon is rejected because the server time is used. |
+
+---
+
+**Test Case ID**: TC12
+
+**Title**: Declined payment does not consume the coupon
+
+**Priority**: High
+
+**Objective**: Verify that a failed payment stores no redemption record, releases stock, and lets the user retry with the coupon (AC4, usage limit)
+
+**Preconditions**:
+- The shop time is within the promotion period
+- The user is registered and logged in and has not used the coupon before
+- Stripe test mode is used
+- The product has stock
+
+Test Data:
+- user_ID: 5456
+- Product: Samsung Galaxy S26 Ultra 512GB, product_ID 101, price 1000.00, qty 1
+- Stripe test cards: declined, then success
+- Coupon: BF2026
+
+Steps, Expected Results:
+
+| No | Step | Expected Result |
+|----|------|----------------|
+| 1  | Add the product to the cart, open Checkout and apply "BF2026". | The discount is 200.00 and the total is 800.00. |
+| 2  | Pay with the Stripe declined test card. | The payment fails with a clear error and no order is confirmed. |
+| 3  | Check the redemption records for user_ID 5456 and the stock of product_ID 101. | No redemption record exists and the stock is released (not deducted). |
+| 4  | Return to Checkout and check the coupon. | "BF2026" can be applied again and the discount is 200.00. |
+| 5  | Pay with the Stripe success test card. | The order is confirmed with the total 800.00, exactly 1 order is created and 1 redemption record is stored. |

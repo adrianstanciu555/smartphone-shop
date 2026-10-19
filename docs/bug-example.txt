@@ -1,0 +1,77 @@
+
+Bug example 1:
+
+- Summary (Title): [BUG-001] - User cannot login after password reset was successfully reset
+
+- Description: User abc123@gmail.com entered 3 times the wrong password.
+He tried to reset the password via the forgot password link.
+However even if the account password was successfully reset, he still cannot login with the new one.
+He sent an email to the Customer Support Team: support@smartphone-shop.com 
+
+- Steps to Reproduce: 
+
+1. User is at the Login page for our website
+
+2. User abc123@gmail.com enters 3 times a wrong password
+
+3. User clicks the Forgot password link and sets up a new password successfully
+
+4. User enters the newly created password in the Login page
+
+5. Still gets wrong password and cannot login into his account.
+
+- Actual Result: User cannot login into his account with the newly created password.
+
+- Expected Result: User can login successfully into his account with the newly created password.
+
+
+- Additional Notes or Metadata (e.g., environment, logs, device, browser, version):
+User ID 378 = abc123@gmail.com, Windows 11, Chrome latest version
+error log: etddf123324.JSON
+
+
+Bug example 2:
+
+- Summary (Title): [BUG-002] - Smartphones are filtered by OS equals Android and displays iOS devices
+
+- Description: On the Products page if you filter the Smartphones by OS = Android you get results for iPhones.
+
+- Steps to Reproduce: 
+
+1. Go to the Products page and filter Smartphones by Operating system = Android
+
+2. In the filtered list there are shown iPhones as well
+
+- Actual Result: On the Products page if you filter Smartphones by OS equals Android, iOS devices are displayed in the list
+
+- Expected Result: On the Products page if you filter Smartphones by OS equals Android, iOS devices are not displayed in the list
+
+- Additional Notes or Metadata (e.g., environment, logs, device, browser, version):
+Guest or any User ID, Windows 11, Firefox latest version
+error log: abc123485845.JSON
+
+Bug example 3:
+
+- Summary (Title): [BUG-003] - Coupon code "10PERCENTFIRSTORDER" is not working
+
+- Description: For the first order on a newly created account we are giving 10% discount.
+However on the Checkout page the already added "10PERCENTFIRSTORDER" coupon doesn't subtract from the total amount (not working).
+
+- Steps to Reproduce: 
+
+1. The User has added a smartphone to the Product cart.
+
+2. Goes to the Checkout page to finish the order.
+
+3. The "10PERCENTFIRSTORDER" coupon code doesn't subtract from the total amount.
+
+- Actual Result: On the Checkout page the "10PERCENTFIRSTORDER" coupon is not working.
+
+- Expected Result: On the Checkout page the "10PERCENTFIRSTORDER" coupon is working, subtracts from the total amount.
+
+- Additional Notes or Metadata (e.g., environment, logs, device, browser, version):
+
+Any logged in user or user 547: miket89@gmail.com
+Coupon code = "10PERCENTFIRSTORDER"
+Windows 11 latest version, Chrome latest version
+error log: jhdfdskfjfdk1232432.JSON

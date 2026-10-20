@@ -38,3 +38,445 @@ AC4: Successful order
 GIVEN that I'm a User that completes the payment with “BF2026” applied,
 WHEN the order is confirmed,
 THEN the system stores a redemption record, with coupon code “BF2026”, user_ID, product_ID, quantity discounted = 1, discount amount, and a UTC timestamp.
+
+
+==================================================
+
+Title: [STORY-1348] Reserve stock at checkout and release it when payment fails or times out
+
+As a Customer, I want the product I am buying to be held for me during checkout, so that I do not pay for an item that was sold to someone else.
+As a Product Owner, I want to prevent overselling, so that we avoid cancelled orders and lost customer trust.
+
+Data Mapping:
+Reservation trigger: customer proceeds to payment on the Checkout page
+Reservation duration: 15 minutes (shop local time, Europe/Bucharest)
+Applies to: smartphones and accessories (cases, screen protectors, cables, chargers, headphones)
+Users: any registered and logged-in user
+Release events: payment failed, payment timed out, checkout abandoned, order cancelled before payment
+
+AC1: Stock is reserved
+GIVEN that I'm a logged-in Customer with 1 unit of a product in my cart
+WHEN I proceed to payment
+THEN 1 unit is reserved for me for 15 minutes
+AND the available stock of the product is reduced by 1 for other customers.
+
+AC2: Last unit cannot be bought by two customers
+GIVEN that a product has 1 unit left
+AND Customer A has started payment for it
+WHEN Customer B tries to checkout the same product
+THEN Customer B sees the message "This product is currently unavailable"
+AND no reservation is created for Customer B.
+
+AC3: Reservation is released on failure or timeout
+GIVEN that I have a reserved unit
+WHEN my payment is declined, or 15 minutes pass without a completed payment
+THEN the reservation is released
+AND the unit becomes available again for other customers.
+
+AC4: Stock is deducted on paid order
+GIVEN that my payment is confirmed by Stripe
+WHEN the order is confirmed
+THEN the reservation is converted into a permanent stock deduction
+AND a payment webhook retry does not deduct stock a second time.
+
+
+==================================================
+
+Title: [STORY-1349] Return a delivered order within 30 days and receive a refund
+
+As a Customer, I want to return a product I received, so that I can get my money back if I am not satisfied.
+As a Support Agent, I want returns to follow clear rules, so that I can process refunds consistently.
+
+Data Mapping:
+Return window: 30 calendar days from the delivery date
+Eligible orders: orders with status "Delivered"
+Refund method: original payment method (Stripe)
+Users: registered Customers, only for their own orders
+Statuses: Return Requested, Return Approved, Returned, Refunded, Return Rejected
+
+AC1: Return request within the window
+GIVEN that I'm a logged-in Customer with an order delivered 29 days ago
+WHEN I open "My orders" and request a return for a product
+AND I select a return reason
+THEN the system creates the return with status "Return Requested"
+AND I receive a confirmation email.
+
+AC2: Return request after the window
+GIVEN that I'm a logged-in Customer with an order delivered 31 days ago
+WHEN I open the order details
+THEN the "Return" option is not available
+AND the system displays "The 30-day return period has expired".
+
+AC3: Refund to original payment method
+GIVEN that a Support Agent marks my return as "Returned"
+WHEN the refund is processed
+THEN the full product amount, including taxes, is refunded to the original payment method
+AND the return status changes to "Refunded"
+AND I receive a refund confirmation email.
+
+AC4: Access to other users' orders is blocked
+GIVEN that I'm a logged-in Customer
+WHEN I try to request a return for an order that belongs to another user_ID
+THEN the system denies the request
+AND no return record is created.
+
+
+==================================================
+
+Title: [STORY-1350] Search and filter smartphones by brand, price, and compatibility
+
+As a Visitor, I want to search and filter the catalog, so that I can quickly find the smartphone or accessory I need without creating an account.
+
+Data Mapping:
+Search scope: product name, brand, and category
+Filters: brand (e.g., Samsung, Apple, Google), price range, category (smartphone, case, screen protector, cable, charger, headphones), compatibility (phone model)
+Sorting: price ascending, price descending, newest
+Users: Visitors and registered Customers (no login required)
+Results page size: 20 products
+
+AC1: Search by keyword
+GIVEN that I'm on the catalog page (logged in or not)
+WHEN I search for "Galaxy S26"
+THEN only products matching "Galaxy S26" are listed
+AND each result shows image, name, price with taxes, and availability.
+
+AC2: Filter by compatibility
+GIVEN that I'm on the catalog page
+WHEN I select the category "Cases" and the compatibility "iPhone 17"
+THEN only cases compatible with iPhone 17 are displayed
+AND no Android-only products appear in the list.
+
+AC3: Combined filters and sorting
+GIVEN that I selected the brand "Anker" and the price range 10 to 50 EUR
+WHEN I sort by price ascending
+THEN only Anker products priced between 10 and 50 EUR (inclusive) are listed
+AND they are ordered from the lowest to the highest price.
+
+AC4: No results
+GIVEN that I'm on the catalog page
+WHEN I search or filter with criteria that match no product
+THEN the system displays "No products found"
+AND suggests clearing the filters.
+
+AC5: Out-of-stock products
+GIVEN that a product has no stock
+WHEN it appears in the results
+THEN it is labeled "Out of stock"
+AND the "Add to cart" action is disabled.
+
+
+==================================================
+
+Title: [STORY-1351] Register a new account with email verification
+
+As a Visitor, I want to create an account, so that I can add products to the cart and buy.
+
+Data Mapping:
+Fields: first name, last name, email, password, consent to Terms and Privacy Policy (required)
+Password rule: minimum 12 characters, at least 1 uppercase letter, 1 lowercase letter, 1 digit, and 1 special character
+Email uniqueness: not case sensitive
+Verification link validity: 24 hours
+Users: Visitors
+
+AC1: Successful registration
+GIVEN that I'm a Visitor on the Sign up page
+WHEN I enter valid data and accept the Terms and Privacy Policy
+THEN my account is created with status "Unverified"
+AND a verification email is sent to my address.
+
+AC2: Email verification
+GIVEN that I received the verification email
+WHEN I open the link within 24 hours
+THEN my account status changes to "Verified"
+AND I can log in and add products to the cart.
+
+AC3: Expired verification link
+GIVEN that my verification link is older than 24 hours
+WHEN I open it
+THEN the system displays "This link has expired"
+AND offers an option to resend the verification email.
+
+AC4: Duplicate email
+GIVEN that an account already exists for "john@example.com"
+WHEN I register with "John@Example.com"
+THEN the system rejects the registration
+AND does not reveal whether the account exists beyond the generic message "Unable to register with this email".
+
+AC5: Weak password
+GIVEN that I'm on the Sign up page
+WHEN I enter a password that does not meet the password rule
+THEN the system displays the unmet rules
+AND no account is created.
+
+
+==================================================
+
+Title: [STORY-1352] Log in with account lockout after failed attempts
+
+As a Customer, I want to log in securely, so that only I can access my account and orders.
+
+Data Mapping:
+Login: email and password
+Lockout rule: 5 consecutive failed attempts lock the account for 15 minutes
+Tokens: JWT access token (short-lived) and refresh token
+Users: Verified Customers
+
+AC1: Successful login
+GIVEN that I'm a Verified Customer
+WHEN I enter the correct email and password
+THEN I'm logged in
+AND I'm redirected to the page I came from, or the catalog.
+
+AC2: Unverified account
+GIVEN that my account is "Unverified"
+WHEN I try to log in with correct credentials
+THEN the system displays "Please verify your email first"
+AND no session is created.
+
+AC3: Invalid credentials
+GIVEN that I'm on the Login page
+WHEN I enter a wrong password
+THEN the system displays "Invalid email or password"
+AND the message is identical for a non-existing email.
+
+AC4: Account lockout
+GIVEN that I failed to log in 5 times in a row
+WHEN I try a 6th time, even with the correct password
+THEN the system displays "Account temporarily locked"
+AND login is blocked for 15 minutes.
+
+
+==================================================
+
+Title: [STORY-1353] Track order status from payment to delivery
+
+As a Customer, I want to see the current status of my order, so that I know when it will arrive.
+
+Data Mapping:
+Statuses: Pending, Paid, Processing, Shipped, Delivered, Cancelled
+Tracking data: courier name, tracking number, tracking link, estimated delivery date
+Users: registered Customers, only for their own orders
+Source of shipping updates: Courier API
+
+AC1: Order history
+GIVEN that I'm a logged-in Customer with existing orders
+WHEN I open "My orders"
+THEN I see only my orders, newest first
+AND each shows order number, date, total, and status.
+
+AC2: Status after payment
+GIVEN that my Stripe payment is confirmed
+WHEN the payment webhook is received
+THEN the order status changes from "Pending" to "Paid"
+AND I receive an order confirmation email.
+
+AC3: Shipment tracking
+GIVEN that the courier shipment is created for my order
+WHEN I open the order details
+THEN the status is "Shipped"
+AND I see the courier name, tracking number, and tracking link.
+
+AC4: Delivery notification
+GIVEN that the courier reports my order as delivered
+WHEN the status is updated
+THEN the order status changes to "Delivered" with the delivery date
+AND I receive a delivery notification.
+
+AC5: Another user's order
+GIVEN that I'm a logged-in Customer
+WHEN I open the order URL of another user_ID
+THEN the system denies access
+AND no order data is displayed.
+
+
+==================================================
+
+Title: [STORY-1354] Cancel an order before shipment
+
+As a Customer, I want to cancel an order that has not been shipped, so that I'm not charged for something I no longer want.
+
+Data Mapping:
+Cancellable statuses: Pending, Paid, Processing
+Non-cancellable statuses: Shipped, Delivered
+Refund method: original payment method (Stripe)
+Stock: units are returned to available stock
+Users: registered Customers, only for their own orders
+
+AC1: Cancel before shipment
+GIVEN that my order status is "Paid" or "Processing"
+WHEN I select "Cancel order" and confirm
+THEN the order status changes to "Cancelled"
+AND I receive a cancellation email.
+
+AC2: Refund and stock release
+GIVEN that my paid order is cancelled
+WHEN the cancellation is completed
+THEN the full amount is refunded to the original payment method
+AND the units are added back to the available stock.
+
+AC3: Cancel after shipment
+GIVEN that my order status is "Shipped"
+WHEN I open the order details
+THEN the "Cancel order" option is not available
+AND the system explains that I can return the order after delivery.
+
+AC4: Double click
+GIVEN that I confirm the cancellation
+WHEN the request is submitted twice (double click or retry)
+THEN only one cancellation and one refund are created.
+
+
+==================================================
+
+Title: [STORY-1355] Support agent processes order status updates
+
+As a Support Agent, I want to view and update orders in the back office, so that I can fulfil and resolve customer requests.
+
+Data Mapping:
+Roles allowed: Support/fulfillment agent, Admin
+Search by: order number, customer email, status, date range
+Allowed updates: Paid to Processing, Processing to Shipped (with tracking number), Return Requested to Approved or Rejected
+Audit log: user, action, old value, new value, UTC timestamp
+
+AC1: Search orders
+GIVEN that I'm a logged-in Support Agent
+WHEN I search by order number or customer email
+THEN the matching orders are listed with status and total.
+
+AC2: Update status
+GIVEN that an order is "Processing"
+WHEN I mark it as "Shipped" and enter a tracking number
+THEN the status changes to "Shipped"
+AND the customer receives a shipment notification.
+
+AC3: Invalid transition
+GIVEN that an order is "Delivered"
+WHEN I try to change it to "Processing"
+THEN the system rejects the change
+AND the status remains "Delivered".
+
+AC4: Audit log
+GIVEN that I change an order status
+WHEN the change is saved
+THEN an audit log entry is stored with my user, the old and new status, and a UTC timestamp.
+
+AC5: Role restriction
+GIVEN that I'm a Customer or a Catalog Manager
+WHEN I try to open the back office order page or call its API
+THEN the system returns "403 Forbidden".
+
+
+==================================================
+
+Title: [STORY-1356] Catalog manager updates product price and stock
+
+As a Catalog and Inventory Manager, I want to change prices and stock levels, so that the catalog stays accurate.
+
+Data Mapping:
+Roles allowed: Catalog/inventory manager, Admin
+Editable fields: price (with taxes, EUR), stock quantity, product status (Active, Hidden)
+Low-stock threshold: 10 units (alert sent to managers)
+Audit log: user, field, old value, new value, UTC timestamp
+
+AC1: Update price
+GIVEN that I'm a logged-in Catalog Manager
+WHEN I change the price of a product to a valid value above 0
+THEN the new price is shown in the catalog
+AND the price change is saved in the audit log.
+
+AC2: Invalid price
+GIVEN that I'm editing a product
+WHEN I enter a price of 0, a negative value, or text
+THEN the system displays a validation error
+AND the price is not changed.
+
+AC3: Update stock
+GIVEN that a product has 5 units
+WHEN I add 20 units
+THEN the available stock becomes 25
+AND the change is saved in the audit log.
+
+AC4: Low-stock alert
+GIVEN that a product has 11 units
+WHEN a paid order reduces the stock below 10 units
+THEN a low-stock alert is sent to the Catalog Managers.
+
+AC5: Price in existing carts
+GIVEN that a customer has the product in the cart
+WHEN I change its price
+THEN the cart total is recalculated at checkout using the new price confirmed by the server.
+
+
+==================================================
+
+Title: [STORY-1357] Add a new product to the catalog
+
+As a Catalog Manager, I want to add a new product, so that customers can find and buy it.
+
+Data Mapping:
+Required fields: name, brand, category, price (with taxes, EUR), initial stock, at least 1 image, description
+Optional fields: specifications, compatibility (phone models)
+Categories: smartphone, case, screen protector, cable, charger, headphones
+Initial status: Hidden until published
+Product ID: generated by the system and unique
+Roles allowed: Catalog/inventory manager, Admin
+
+AC1: Create product
+GIVEN that I'm a logged-in Catalog Manager
+WHEN I fill in all required fields and save
+THEN the product is created with status "Hidden"
+AND it is not visible in the public catalog.
+
+AC2: Publish product
+GIVEN that a Hidden product is complete
+WHEN I publish it
+THEN the product appears in the catalog and search results
+AND it can be filtered by its brand, category, and compatibility.
+
+AC3: Missing required fields
+GIVEN that I'm creating a product
+WHEN I leave a required field empty
+THEN the system highlights the missing fields
+AND the product is not saved.
+
+AC4: Duplicate product
+GIVEN that a product with the same brand, name, and variant already exists
+WHEN I try to create it again
+THEN the system displays "This product already exists"
+AND no duplicate is created.
+
+
+==================================================
+
+Title: [STORY-1358] Customer discovers and buys a newly added product
+
+As a Customer, I want to find and buy a newly published product, so that I can get the latest items.
+
+Data Mapping:
+New product label: "New" for 30 days after publication
+Sorting: "Newest" lists the most recently published first
+Purchase rules: same as any product (login required, stock reserved at checkout)
+Users: Visitors (browse) and registered Customers (buy)
+
+AC1: Visible in catalog
+GIVEN that a product was just published with stock
+WHEN I open the catalog sorted by "Newest"
+THEN the product is listed first
+AND it has the label "New".
+
+AC2: Product details
+GIVEN that I open the new product page
+WHEN the page loads
+THEN I see its images, specifications, price with taxes, and availability.
+
+AC3: Purchase
+GIVEN that I'm a logged-in Customer
+WHEN I add the new product to the cart and complete the payment
+THEN the order is created
+AND the product stock is reduced accordingly.
+
+AC4: Visitor cannot buy
+GIVEN that I'm a Visitor
+WHEN I try to add the new product to the cart
+THEN I'm asked to log in or register
+AND the product is not added to any cart.

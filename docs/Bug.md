@@ -109,7 +109,7 @@ He sent an email to the Customer Support Team: support@smartphone-shop.com
 - Created Date: 2025-10-29
 - Closed Date: 2025-11-06
 - Root Cause: Likely the failed-attempt counter or temporary lock is not cleared when the password is reset, so the login with the new password is still rejected.
-- Tags: Backend
+- Tags: Backend, Production issue
 - Area Path: SmartphoneShop\Backend\Auth
 
 - Steps to Reproduce:
@@ -148,7 +148,7 @@ Bug example 2:
 - Created Date: 2025-10-29
 - Closed Date: 2025-11-03
 - Root Cause: Likely the OS filter is not applied in the catalog search query, or the iPhone products have the wrong OS attribute in the catalog data.
-- Tags: Backend
+- Tags: Backend, Other
 - Area Path: SmartphoneShop\Backend\Catalog
 
 - Steps to Reproduce:
@@ -182,7 +182,7 @@ However on the Checkout page the already added "10PERCENTFIRSTORDER" coupon does
 - Created Date: 2025-11-07
 - Closed Date: 2025-11-15
 - Root Cause: Likely the first-order eligibility check fails (for example it counts the pending or cart order), so the discount is never added to the order total.
-- Tags: Backend
+- Tags: Backend, Production issue, Migration
 - Area Path: SmartphoneShop\Backend\Checkout
 
 - Steps to Reproduce:
@@ -219,7 +219,7 @@ Bug example 4:
 - Created Date: 2025-11-19
 - Closed Date: -
 - Root Cause: Likely the 20% discount is calculated on the line total (price x quantity) instead of 1 unit.
-- Tags: Backend
+- Tags: Backend, Other
 - Area Path: SmartphoneShop\Backend\Checkout
 
 - Steps to Reproduce:
@@ -258,7 +258,7 @@ Bug example 5:
 - Created Date: 2025-11-22
 - Closed Date: -
 - Root Cause: Likely the JWT guard is missing on POST /api/checkout/coupon, or the expired token is not validated.
-- Tags: Backend
+- Tags: Backend, Other
 - Area Path: SmartphoneShop\Backend\Checkout
 
 - Steps to Reproduce:
@@ -293,7 +293,7 @@ Bug example 6:
 - Created Date: 2025-11-22
 - Closed Date: -
 - Root Cause: Likely the end of the promotion is compared in UTC instead of Europe/Bucharest, or the end date is inclusive of the next day.
-- Tags: Backend
+- Tags: Backend, Other
 - Area Path: SmartphoneShop\Backend\Checkout
 
 - Steps to Reproduce:
@@ -331,7 +331,7 @@ Bug example 7:
 - Created Date: 2025-12-02
 - Closed Date: -
 - Root Cause: Likely the redemption record is not saved in the order confirmation transaction, so the usage limit is never enforced.
-- Tags: Backend
+- Tags: Backend, Other
 - Area Path: SmartphoneShop\Backend\Checkout
 
 - Steps to Reproduce:
@@ -372,7 +372,7 @@ Bug example 8:
 - Created Date: 2025-12-24
 - Closed Date: 2026-01-04
 - Root Cause: The quantity change updated the local state but did not wait for the recalculated totals from the cart API, so the totals were not re-rendered.
-- Tags: Frontend
+- Tags: Frontend, Production issue
 - Area Path: SmartphoneShop\Frontend\Customer\Cart
 
 - Steps to Reproduce:
@@ -409,7 +409,7 @@ Bug example 9:
 - Created Date: 2025-12-28
 - Closed Date: -
 - Root Cause: Likely the stock check and the stock decrement are not atomic (no row lock or conditional update in the reservation transaction).
-- Tags: Backend
+- Tags: Backend, Other
 - Area Path: SmartphoneShop\Backend\Inventory
 
 - Steps to Reproduce:
@@ -450,7 +450,7 @@ Bug example 10:
 - Created Date: 2026-01-04
 - Closed Date: -
 - Root Cause: Likely the webhook handler runs the order update, stock deduction, and email in one request and exceeds the Stripe timeout (504). The failed event is not retried or reconciled.
-- Tags: Backend
+- Tags: Backend, Other
 - Area Path: SmartphoneShop\Backend\Checkout\Webhooks
 
 - Steps to Reproduce:
@@ -492,7 +492,7 @@ Bug example 11:
 - Created Date: 2026-02-03
 - Closed Date: -
 - Root Cause: Likely the button is not disabled after the first click and the checkout request has no idempotency key.
-- Tags: Backend, Frontend
+- Tags: Backend, Frontend, Other
 - Area Path: SmartphoneShop\Frontend\Customer\Checkout
 
 - Steps to Reproduce:
@@ -531,7 +531,7 @@ Bug example 12:
 - Created Date: 2026-02-08
 - Closed Date: -
 - Root Cause: To be confirmed
-- Tags: Backend
+- Tags: Backend, Other
 - Area Path: SmartphoneShop\Backend\Catalog
 
 - Steps to Reproduce:
@@ -569,7 +569,7 @@ Bug example 13:
 - Created Date: 2026-02-27
 - Closed Date: -
 - Root Cause: Broken access control (IDOR). GET /api/orders/:id likely loads the order by ID only and does not check that the order belongs to the user in the JWT.
-- Tags: Backend, Frontend
+- Tags: Backend, Frontend, Other
 - Area Path: SmartphoneShop\Backend\Orders
 
 - Steps to Reproduce:
@@ -606,7 +606,7 @@ Bug example 14:
 - Created Date: 2026-03-07
 - Closed Date: -
 - Root Cause: Likely the declined payment event does not trigger the release, and the 15-minute expiry job does not release the reservation.
-- Tags: Backend
+- Tags: Backend, Other
 - Area Path: SmartphoneShop\Backend\Inventory
 
 - Steps to Reproduce:
@@ -647,7 +647,7 @@ Bug example 15:
 - Created Date: 2026-03-25
 - Closed Date: -
 - Root Cause: Likely an off-by-one error or a UTC/local date conversion in the 30-day comparison.
-- Tags: Backend
+- Tags: Backend, Other
 - Area Path: SmartphoneShop\Backend\Orders
 
 - Steps to Reproduce:
@@ -685,7 +685,7 @@ Bug example 16:
 - Created Date: 2026-04-26
 - Closed Date: -
 - Root Cause: To be confirmed
-- Tags: Backend, Frontend
+- Tags: Backend, Frontend, Other
 - Area Path: SmartphoneShop\Backend\Users
 
 - Steps to Reproduce:
@@ -723,7 +723,7 @@ Bug example 17:
 - Created Date: 2026-05-22
 - Closed Date: -
 - Root Cause: Likely the backend uses the unitPrice from the request body instead of the catalog price.
-- Tags: Backend
+- Tags: Backend, Other
 - Area Path: SmartphoneShop\Backend\Checkout
 
 - Steps to Reproduce:
@@ -763,7 +763,7 @@ Bug example 18:
 - Created Date: 2026-08-21
 - Closed Date: -
 - Root Cause: Likely the failed-attempt counter and the Redis rate limit are not implemented or not enabled for the login endpoint.
-- Tags: Backend
+- Tags: Backend, Other
 - Area Path: SmartphoneShop\Backend\Auth
 
 - Steps to Reproduce:
@@ -801,7 +801,7 @@ Bug example 19:
 - Created Date: 2026-08-27
 - Closed Date: -
 - Root Cause: Likely the checkout does not check the email verification status on the server.
-- Tags: Backend, Frontend
+- Tags: Backend, Frontend, Other
 - Area Path: SmartphoneShop\Backend\Checkout
 
 - Steps to Reproduce:
@@ -838,7 +838,7 @@ Bug example 20:
 - Created Date: 2026-08-30
 - Closed Date: -
 - Root Cause: Likely the cancellation flow does not call the Stripe refund API, or the call fails silently. Retesting is blocked by the unstable Stripe sandbox.
-- Tags: Backend
+- Tags: Backend, Other
 - Area Path: SmartphoneShop\Backend\Orders
 
 - Steps to Reproduce:
@@ -877,7 +877,7 @@ Bug example 21:
 - Created Date: 2026-09-15
 - Closed Date: -
 - Root Cause: Likely the link expiry is not checked on the server.
-- Tags: Backend
+- Tags: Backend, Other
 - Area Path: SmartphoneShop\Backend\Auth
 
 - Steps to Reproduce:
@@ -912,7 +912,7 @@ Bug example 22:
 - Created Date: 2026-09-17
 - Closed Date: -
 - Root Cause: Likely the unique constraint on the email column is case sensitive.
-- Tags: Backend
+- Tags: Backend, Other
 - Area Path: SmartphoneShop\Backend\Auth
 
 - Steps to Reproduce:
@@ -947,7 +947,7 @@ Bug example 23:
 - Created Date: 2026-09-21
 - Closed Date: -
 - Root Cause: To be confirmed
-- Tags: Backend
+- Tags: Backend, Other
 - Area Path: SmartphoneShop\Backend\Inventory
 
 - Steps to Reproduce:
@@ -983,7 +983,7 @@ Bug example 24:
 - Created Date: 2026-09-28
 - Closed Date: -
 - Root Cause: Likely the allowed status transitions are not validated on the server (the API also returns 200).
-- Tags: Backend
+- Tags: Backend, Other
 - Area Path: SmartphoneShop\Backend\Admin
 
 - Steps to Reproduce:
@@ -1020,7 +1020,7 @@ Bug example 25:
 - Created Date: 2026-10-01
 - Closed Date: -
 - Root Cause: To be confirmed
-- Tags: Backend, Frontend
+- Tags: Backend, Frontend, Other
 - Area Path: SmartphoneShop\Backend\Catalog
 
 - Steps to Reproduce:
@@ -1039,4 +1039,363 @@ Bug example 25:
 
 - Additional Notes or Metadata (e.g., environment, logs, device, browser, version):
 Catalog Manager and Visitor roles, Staging, Windows 11, Chrome latest version
+
+
+Bug example 26:
+
+- Summary (Title): [BUG-026] - "Pay now" button is not clickable on the new Checkout page on iPhone Safari
+
+- Description: After the migration to the new design, the "Pay now" button on the Checkout page is covered by the new sticky order summary bar on iPhone Safari. Customers cannot complete the payment on mobile.
+
+- Priority: P1
+- Severity: Critical
+- Status: In Progress
+- Component: Checkout page layout (sticky summary)
+- Category: UI
+- Module: Checkout & Payments
+- Created Date: 2026-10-02
+- Closed Date: -
+- Root Cause: Likely the new sticky bar uses 100vh and a z-index higher than the button, which does not account for the Safari dynamic toolbar.
+- Tags: Frontend, Production issue, Migration
+- Area Path: SmartphoneShop\Frontend\Customer\Checkout
+
+- Steps to Reproduce:
+
+1. Open the website in Production on an iPhone 15 (iOS 18, Safari) and log in as a registered customer
+
+2. Add 1 smartphone to the cart and open the Checkout page
+
+3. Select the delivery address and delivery method
+
+4. Scroll to the bottom of the page and tap the "Pay now" button
+
+- Actual Result: The tap is captured by the sticky order summary bar, which only expands and collapses. The "Pay now" button cannot be tapped, and the payment is not started.
+
+- Expected Result: The "Pay now" button is fully visible and clickable on all supported mobile browsers, and the payment is started.
+
+- Additional Notes or Metadata (e.g., environment, logs, device, browser, version):
+Production, iPhone 15, iOS 18, Safari. Not reproduced on Android Chrome or desktop.
+Checkout conversion on iOS Safari dropped after the release 2026.09.1 (see monitoring dashboard).
+Sentry: no error. Screen recording: checkout-ios-sticky-9912034.MP4
+
+
+Bug example 27:
+
+- Summary (Title): [BUG-027] - Old product URLs return 404 after the new design release (SEO traffic loss)
+
+- Description: The new design changed the product URL structure from /product/[id] to /products/[brand]/[slug]-[id]. The old URLs indexed by Google and used in emails and bookmarks return "404 Not Found" instead of redirecting to the new page.
+
+- Priority: P1
+- Severity: High
+- Status: In Progress
+- Component: URL routing and redirects
+- Category: Functional
+- Module: Product Catalog
+- Created Date: 2026-10-05
+- Closed Date: -
+- Root Cause: Likely the 301 redirect rules from the old routes were not added to the Next.js configuration during the migration.
+- Tags: Frontend, Production issue, Migration
+- Area Path: SmartphoneShop\Frontend\Public\Product
+
+- Steps to Reproduce:
+
+1. Open the old URL https://www.smartphone-shop.com/product/101 in Production as a visitor
+
+2. Search "Samsung Galaxy S26 Ultra" in Google and open the result that points to the old URL
+
+- Actual Result: The "404 Page not found" page is displayed. Organic traffic to product pages dropped by about 35% in the week after the release.
+
+- Expected Result: The old URL is redirected with a 301 response to the new product page URL, and the product details are displayed.
+
+- Additional Notes or Metadata (e.g., environment, logs, device, browser, version):
+Production, visitor (no account), Windows 11, Chrome latest version
+Product_ID 101. Google Search Console shows "Not found (404)" for 1,240 URLs.
+error log: redirect-404-3341876.JSON
+
+
+Bug example 28:
+
+- Summary (Title): [BUG-028] - Cart items of logged-in customers are empty after the release of the new design
+
+- Description: After the release, some returning customers open the Cart page and see an empty cart, although they added products before the release. The old cart data was not migrated to the new cart format.
+
+- Priority: P1
+- Severity: High
+- Status: Ready for QA
+- Component: Cart data migration
+- Category: Data
+- Module: Shopping Cart
+- Created Date: 2026-10-07
+- Closed Date: -
+- Root Cause: Likely the Redis cart cache key changed in the new version (cart:{userId} to cart:v2:{userId}), and the old carts were not migrated or read.
+- Tags: Backend, Production issue, Migration
+- Area Path: SmartphoneShop\Backend\Cart
+
+- Steps to Reproduce:
+
+1. Use a Production customer account (user ID 41872) that had 2 products in the cart before the release 2026.09.1
+
+2. Log in after the release and open the Cart page
+
+3. Check the cart in the database (carts and cart_items tables) for the same user
+
+- Actual Result: The Cart page shows "Your cart is empty". The database still contains 2 cart items for user ID 41872.
+
+- Expected Result: The Cart page shows the 2 products added before the release, with the current price and availability.
+
+- Additional Notes or Metadata (e.g., environment, logs, device, browser, version):
+Production, user ID 41872, Windows 11, Chrome latest version
+Reported by 38 customers to Customer Support (support@smartphone-shop.com).
+error log: cart-migration-5528410.JSON
+
+
+Bug example 29:
+
+- Summary (Title): [BUG-029] - Login session is lost after the release and customers must log in again every few minutes
+
+- Description: After the new frontend release, customers are logged out after about 5 minutes of activity. The new frontend does not use the refresh token to get a new access token.
+
+- Priority: P1
+- Severity: High
+- Status: Ready for Release
+- Component: Token refresh in the API client
+- Category: Functional
+- Module: User Accounts & Authentication
+- Created Date: 2026-10-08
+- Closed Date: -
+- Root Cause: Likely the new API client does not send the refresh token cookie (missing credentials: "include"), so the refresh request returns 401.
+- Tags: Frontend, Production issue, Migration
+- Area Path: SmartphoneShop\Frontend\Auth
+
+- Steps to Reproduce:
+
+1. Open the website in Production and log in as a registered customer (user ID 41872) with "Remember me" selected
+
+2. Browse the catalog and add a product to the cart
+
+3. Wait 6 minutes (the access token is valid 5 minutes) and click "Cart"
+
+- Actual Result: The customer is redirected to the Login page with the message "Session expired". The request POST /api/auth/refresh returns 401.
+
+- Expected Result: The access token is refreshed silently with the refresh token, and the customer stays logged in and opens the Cart page.
+
+- Additional Notes or Metadata (e.g., environment, logs, device, browser, version):
+Production, user ID 41872, Windows 11, Chrome and Firefox latest versions
+The refresh request does not contain the cookie in the Network tab.
+error log: refresh-401-7765012.JSON
+
+
+Bug example 30:
+
+- Summary (Title): [BUG-030] - Product images are 4-5 MB each and the Catalog page loads slowly on the new design
+
+- Description: In the new catalog grid, the original product images (4-5 MB) are loaded instead of the optimized thumbnails. The LCP on the catalog page is above the 2.5 s target and the customers on mobile networks leave the page.
+
+- Priority: P2
+- Severity: High
+- Status: In Progress
+- Component: Catalog product grid, image optimization
+- Category: Performance
+- Module: Product Catalog
+- Created Date: 2026-10-09
+- Closed Date: -
+- Root Cause: Likely the new image component does not use the Next.js image optimization and CloudFront resized variants, so the original files from S3 are loaded.
+- Tags: Frontend, Production issue, Migration
+- Area Path: SmartphoneShop\Frontend\Public\Catalog
+
+- Steps to Reproduce:
+
+1. Open https://www.smartphone-shop.com/catalog in Production as a visitor on Chrome with the network throttled to "Fast 4G"
+
+2. Open DevTools (Network tab) and reload the page
+
+3. Check the size of the image requests and the LCP in Lighthouse
+
+- Actual Result: The page loads 20 images with a total of 86 MB. The LCP is 7.8 s on mobile (before the release: 2.1 s).
+
+- Expected Result: The page loads optimized images (WebP/AVIF, under 200 KB each), and the LCP is below 2.5 s.
+
+- Additional Notes or Metadata (e.g., environment, logs, device, browser, version):
+Production, visitor (no account), Windows 11, Chrome latest version, Fast 4G throttling
+Lighthouse report: catalog-lcp-2026-10-09.JSON
+
+
+Bug example 31:
+
+- Summary (Title): [BUG-031] - Order confirmation emails are sent with the old logo, broken links, and without the order total
+
+- Description: After the migration to the new design, the order confirmation emails use the old template. The logo and the "View order" link point to the old paths, and the order total and the delivery address are empty.
+
+- Priority: P2
+- Severity: Medium
+- Status: To Do
+- Component: Order confirmation email template
+- Category: Functional
+- Module: Order Management & Delivery
+- Created Date: 2026-10-12
+- Closed Date: -
+- Root Cause: Likely the email template still uses the old order fields and links, and the new order response does not include the same data.
+- Tags: Backend, Production issue, Migration
+- Area Path: SmartphoneShop\Backend\Notifications
+
+- Steps to Reproduce:
+
+1. Use the Production post-release smoke test account (dedicated test account) and place an order with 1 accessory
+
+2. Complete the payment and wait for the confirmation email
+
+3. Open the email and click the "View order" link
+
+- Actual Result: The email shows the old logo, the order total is "€ -" and the delivery address is empty. The "View order" link returns "404 Page not found".
+
+- Expected Result: The email shows the new branding, the correct order number, items, total with taxes, and delivery address. The "View order" link opens the order details page.
+
+- Additional Notes or Metadata (e.g., environment, logs, device, browser, version):
+Production smoke test account, Gmail web and Outlook desktop
+error log: email-template-3390417.JSON
+
+
+Bug example 32:
+
+- Summary (Title): [BUG-032] - Cookie consent banner is shown on every page load and analytics scripts run before consent
+
+- Description: In the new design the cookie consent choice is not saved. The banner is displayed on every page, and the analytics and marketing scripts are loaded before the visitor accepts them. This is a GDPR compliance risk.
+
+- Priority: P1
+- Severity: High
+- Status: New
+- Component: Cookie consent banner
+- Category: Compliance
+- Module: User Accounts & Authentication
+- Created Date: 2026-10-13
+- Closed Date: -
+- Root Cause: Likely the consent cookie is not set with the correct domain and the script loader ignores the consent state in the new layout.
+- Tags: Frontend, Production issue, Migration
+- Area Path: SmartphoneShop\Frontend\Public\Layout
+
+- Steps to Reproduce:
+
+1. Open the website in Production as a visitor in a new private window
+
+2. Before clicking on the banner, open DevTools (Network tab) and check the requests
+
+3. Click "Reject all" and navigate to another page
+
+- Actual Result: The analytics and marketing requests are sent before the consent. After "Reject all" the banner is displayed again on the next page, and the requests are still sent.
+
+- Expected Result: No analytics or marketing scripts are loaded before the consent. The choice is saved, and the banner is not displayed again.
+
+- Additional Notes or Metadata (e.g., environment, logs, device, browser, version):
+Production, visitor (no account), Windows 11, Chrome and Firefox latest versions
+Compliance impact: GDPR and cookie consent requirement.
+HAR file: cookie-consent-4420981.HAR
+
+
+Bug example 33:
+
+- Summary (Title): [BUG-033] - Saved delivery addresses are missing the phone number after the profile migration
+
+- Description: After the migration of the profile and addresses to the new database schema, existing customers see their saved addresses without the phone number. At Checkout they must enter the phone again, and the courier shipments are created without a phone.
+
+- Priority: P1
+- Severity: High
+- Status: In Progress
+- Component: Delivery address data migration
+- Category: Data
+- Module: User Accounts & Authentication
+- Created Date: 2026-10-15
+- Closed Date: -
+- Root Cause: Likely the migration script did not map the old column "phone" to the new column "contact_phone" for addresses created before 2026.
+- Tags: Backend, Production issue, Migration
+- Area Path: SmartphoneShop\Backend\Users
+
+- Steps to Reproduce:
+
+1. Log in to Production as a customer with a saved address created before the release (user ID 41872)
+
+2. Open Profile and then "Delivery addresses"
+
+3. Open the saved address for editing
+
+- Actual Result: The "Phone" field is empty. The old database table still contains the value "+40 721 xxx xxx" for the same address.
+
+- Expected Result: All saved addresses keep their phone number after the migration, and the field is pre-filled in the profile and at Checkout.
+
+- Additional Notes or Metadata (e.g., environment, logs, device, browser, version):
+Production, user ID 41872, address ID 66102. About 12,000 addresses affected (query result).
+error log: address-migration-2208731.JSON
+
+
+Bug example 34:
+
+- Summary (Title): [BUG-034] - Prices in the new product cards are shown without taxes
+
+- Description: The new product card component shows the price without taxes, but the Checkout shows the price with taxes. Customers see a higher amount at the Checkout. Consumer protection rules require showing the price with taxes.
+
+- Priority: P1
+- Severity: High
+- Status: Ready for QA
+- Component: Product card price
+- Category: Functional
+- Module: Product Catalog
+- Created Date: 2026-10-16
+- Closed Date: -
+- Root Cause: Likely the new component reads the field price_net instead of price_gross from the catalog API.
+- Tags: Frontend, Production issue, Migration
+- Area Path: SmartphoneShop\Frontend\Public\Catalog
+
+- Steps to Reproduce:
+
+1. Open the Catalog page in Production as a visitor and search "Anker 20W USB-C Charger"
+
+2. Note the price in the product card
+
+3. Open the product page, log in, add 1 unit to the cart, and open the Checkout page
+
+- Actual Result: The product card shows 40.33 EUR. The Checkout shows 48.00 EUR (with 19% taxes).
+
+- Expected Result: The product card, product page, cart, and Checkout show the same price with taxes, 48.00 EUR.
+
+- Additional Notes or Metadata (e.g., environment, logs, device, browser, version):
+Production, product_ID 2045, Windows 11, Chrome latest version
+Compliance impact: price with taxes must be shown (consumer protection).
+error log: price-net-6615420.JSON
+
+
+Bug example 35:
+
+- Summary (Title): [BUG-035] - Stripe webhooks are rejected with 400 after the infrastructure migration to the new ECS service
+
+- Description: After the backend was moved to the new ECS Fargate service behind the new load balancer, the Stripe webhook signature validation fails. Paid orders stay in "Pending" and the customers do not receive the confirmation email.
+
+- Priority: P1
+- Severity: Critical
+- Status: Blocked
+- Component: Stripe webhook signature validation
+- Category: Integration
+- Module: Checkout & Payments
+- Created Date: 2026-10-19
+- Closed Date: -
+- Root Cause: Likely the new Production secret STRIPE_WEBHOOK_SECRET is not configured (it is still the Staging value), or the request body is modified by the load balancer before the signature check.
+- Tags: Backend, Production issue, Migration
+- Area Path: SmartphoneShop\Backend\Checkout\Webhooks
+
+- Steps to Reproduce:
+
+1. Use the Production post-release smoke test account and place an order with 1 accessory
+
+2. Pay with the real card of the smoke test account (the amount is refunded after the test)
+
+3. Check the order status in "My orders"
+
+4. Check the webhook deliveries in the Stripe dashboard (Production)
+
+- Actual Result: The payment is "Succeeded" in Stripe, but the order stays in "Pending". The webhook deliveries show the response 400 "Invalid signature". No confirmation email is sent and the stock is not deducted.
+
+- Expected Result: The webhook is accepted with a 200 response, the order status changes to "Paid", the confirmation email is sent, and the stock is deducted.
+
+- Additional Notes or Metadata (e.g., environment, logs, device, browser, version):
+Production, smoke test account, order ID 120442, Stripe payment intent pi_live_9Qa17
+Blocked until the DevOps team updates the secret in AWS Secrets Manager. 63 orders are in "Pending" and must be reconciled.
+error log: webhook-signature-9031276.JSON
 ```

@@ -88,14 +88,139 @@ If any section remains unclear or incomplete, revise until all content meets hig
 
 ---
 
-## Examples: Bug reports for STORY-1347 and the cart
+## Examples: Bug reports
 
 ```text
+Bug example 1:
+
+- Summary (Title): [BUG-001] - User cannot login after password reset was successfully reset
+
+- Description: User abc123@gmail.com entered 3 times the wrong password.
+He tried to reset the password via the forgot password link.
+However even if the account password was successfully reset, he still cannot login with the new one.
+He sent an email to the Customer Support Team: support@smartphone-shop.com
+
+- Priority: P1
+- Severity: High
+- Status: Closed
+- Component: Password reset and login
+- Category: Functional
+- Module: User Accounts & Authentication
+- Created Date: 2025-10-29
+- Closed Date: 2025-11-06
+- Root Cause: Likely the failed-attempt counter or temporary lock is not cleared when the password is reset, so the login with the new password is still rejected.
+- Tags: Backend
+- Area Path: SmartphoneShop\Backend\Auth
+
+- Steps to Reproduce:
+
+1. User is at the Login page for our website
+
+2. User abc123@gmail.com enters 3 times a wrong password
+
+3. User clicks the Forgot password link and sets up a new password successfully
+
+4. User enters the newly created password in the Login page
+
+5. Still gets wrong password and cannot login into his account.
+
+- Actual Result: User cannot login into his account with the newly created password.
+
+- Expected Result: User can login successfully into his account with the newly created password.
+
+- Additional Notes or Metadata (e.g., environment, logs, device, browser, version):
+User ID 378 = abc123@gmail.com, Windows 11, Chrome latest version
+error log: etddf123324.JSON
+
+
+Bug example 2:
+
+- Summary (Title): [BUG-002] - Smartphones are filtered by OS equals Android and displays iOS devices
+
+- Description: On the Products page if you filter the Smartphones by OS = Android you get results for iPhones.
+
+- Priority: P2
+- Severity: Medium
+- Status: Closed
+- Component: Catalog filters (OS)
+- Category: Functional
+- Module: Product Catalog
+- Created Date: 2025-10-29
+- Closed Date: 2025-11-03
+- Root Cause: Likely the OS filter is not applied in the catalog search query, or the iPhone products have the wrong OS attribute in the catalog data.
+- Tags: Backend
+- Area Path: SmartphoneShop\Backend\Catalog
+
+- Steps to Reproduce:
+
+1. Go to the Products page and filter Smartphones by Operating system = Android
+
+2. In the filtered list there are shown iPhones as well
+
+- Actual Result: On the Products page if you filter Smartphones by OS equals Android, iOS devices are displayed in the list
+
+- Expected Result: On the Products page if you filter Smartphones by OS equals Android, iOS devices are not displayed in the list
+
+- Additional Notes or Metadata (e.g., environment, logs, device, browser, version):
+Guest or any User ID, Windows 11, Firefox latest version
+error log: abc123485845.JSON
+
+
+Bug example 3:
+
+- Summary (Title): [BUG-003] - Coupon code "10PERCENTFIRSTORDER" is not working
+
+- Description: For the first order on a newly created account we are giving 10% discount.
+However on the Checkout page the already added "10PERCENTFIRSTORDER" coupon doesn't subtract from the total amount (not working).
+
+- Priority: P2
+- Severity: High
+- Status: Closed
+- Component: Coupon calculation
+- Category: Functional
+- Module: Checkout & Payments
+- Created Date: 2025-11-07
+- Closed Date: 2025-11-15
+- Root Cause: Likely the first-order eligibility check fails (for example it counts the pending or cart order), so the discount is never added to the order total.
+- Tags: Backend
+- Area Path: SmartphoneShop\Backend\Checkout
+
+- Steps to Reproduce:
+
+1. The User has added a smartphone to the Product cart.
+
+2. Goes to the Checkout page to finish the order.
+
+3. The "10PERCENTFIRSTORDER" coupon code doesn't subtract from the total amount.
+
+- Actual Result: On the Checkout page the "10PERCENTFIRSTORDER" coupon is not working.
+
+- Expected Result: On the Checkout page the "10PERCENTFIRSTORDER" coupon is working, subtracts from the total amount.
+
+- Additional Notes or Metadata (e.g., environment, logs, device, browser, version):
+Any logged in user or user 547: miket89@gmail.com
+Coupon code = "10PERCENTFIRSTORDER"
+Windows 11 latest version, Chrome latest version
+error log: jhdfdskfjfdk1232432.JSON
+
+
 Bug example 4:
 
 - Summary (Title): [BUG-004] - Coupon "BF2026" discounts both units when the cart has 2 units of the same product
 
 - Description: During the Black Friday campaign, a registered user adds 2 units of the same product to the cart and applies "BF2026" at Checkout. The 20% discount is applied to both units, but the discount must be applied to 1 unit only (STORY-1347, AC2).
+
+- Priority: P1
+- Severity: Critical
+- Status: In Progress
+- Component: Coupon calculation (BF2026)
+- Category: Functional
+- Module: Checkout & Payments
+- Created Date: 2025-11-19
+- Closed Date: -
+- Root Cause: Likely the 20% discount is calculated on the line total (price x quantity) instead of 1 unit.
+- Tags: Backend
+- Area Path: SmartphoneShop\Backend\Checkout
 
 - Steps to Reproduce:
 
@@ -124,6 +249,18 @@ Bug example 5:
 
 - Description: Only registered, logged-in users can use the coupon. A request to apply "BF2026" sent without an Authorization header (or with an expired token) returns a discount instead of being rejected.
 
+- Priority: P1
+- Severity: Critical
+- Status: To Do
+- Component: Coupon API, authentication guard
+- Category: Security
+- Module: Checkout & Payments
+- Created Date: 2025-11-22
+- Closed Date: -
+- Root Cause: Likely the JWT guard is missing on POST /api/checkout/coupon, or the expired token is not validated.
+- Tags: Backend
+- Area Path: SmartphoneShop\Backend\Checkout
+
 - Steps to Reproduce:
 
 1. Log in as user_ID=5456 (registered user) when the shop time is 2026-11-28 12:00 (Europe/Bucharest), add 1 unit of any smartphone to the cart and open the Checkout page
@@ -146,6 +283,18 @@ Bug example 6:
 - Summary (Title): [BUG-006] - Coupon "BF2026" is accepted on 2026-12-01 00:00:00 after the Black Friday promotion ended
 
 - Description: The promotion period is 2026-11-27 00:00:00 to 2026-11-30 23:59:59 (Europe/Bucharest). A registered user can still apply "BF2026" at the exact time the promotion ends, and receives the 20% discount.
+
+- Priority: P2
+- Severity: High
+- Status: To Do
+- Component: Coupon validity period (BF2026)
+- Category: Functional
+- Module: Checkout & Payments
+- Created Date: 2025-11-22
+- Closed Date: -
+- Root Cause: Likely the end of the promotion is compared in UTC instead of Europe/Bucharest, or the end date is inclusive of the next day.
+- Tags: Backend
+- Area Path: SmartphoneShop\Backend\Checkout
 
 - Steps to Reproduce:
 
@@ -172,6 +321,18 @@ Bug example 7:
 - Summary (Title): [BUG-007] - Redemption record for "BF2026" is not stored after a successful order
 
 - Description: A registered user completes an order with "BF2026" applied and receives the discount, but no redemption record is created. As a result, the same user can use the coupon again for the same product (STORY-1347, AC4).
+
+- Priority: P1
+- Severity: High
+- Status: In Progress
+- Component: Coupon redemption records
+- Category: Functional
+- Module: Checkout & Payments
+- Created Date: 2025-12-02
+- Closed Date: -
+- Root Cause: Likely the redemption record is not saved in the order confirmation transaction, so the usage limit is never enforced.
+- Tags: Backend
+- Area Path: SmartphoneShop\Backend\Checkout
 
 - Steps to Reproduce:
 
@@ -202,6 +363,18 @@ Bug example 8:
 
 - Description: On the Cart page, when the user changes the quantity of a product, the line total and the cart total keep the old values. The correct amount is shown only after refreshing the page.
 
+- Priority: P2
+- Severity: Medium
+- Status: Closed
+- Component: Cart totals display
+- Category: Functional
+- Module: Shopping Cart
+- Created Date: 2025-12-24
+- Closed Date: 2026-01-04
+- Root Cause: The quantity change updated the local state but did not wait for the recalculated totals from the cart API, so the totals were not re-rendered.
+- Tags: Frontend
+- Area Path: SmartphoneShop\Frontend\Customer\Cart
+
 - Steps to Reproduce:
 
 1. Log in as any registered user
@@ -226,6 +399,18 @@ Bug example 9:
 - Summary (Title): [BUG-009] - Two customers can buy the last unit of a product at the same time (overselling)
 
 - Description: A product has 1 unit left in stock. Two different registered customers pay for it at the same time. Both orders are confirmed and the stock becomes -1, although the stock must be reserved at checkout and an out-of-stock product cannot be purchased.
+
+- Priority: P1
+- Severity: Critical
+- Status: In Progress
+- Component: Stock reservation
+- Category: Concurrency
+- Module: Inventory Management
+- Created Date: 2025-12-28
+- Closed Date: -
+- Root Cause: Likely the stock check and the stock decrement are not atomic (no row lock or conditional update in the reservation transaction).
+- Tags: Backend
+- Area Path: SmartphoneShop\Backend\Inventory
 
 - Steps to Reproduce:
 
@@ -255,6 +440,18 @@ Bug example 10:
 - Summary (Title): [BUG-010] - Order stays in "Pending" after a successful Stripe payment
 
 - Description: A customer pays with a valid test card and the Stripe payment is successful, but the order status in the shop is not updated to "Paid". The customer does not receive the order confirmation email and the stock is not deducted. The payment webhook seems to be missed.
+
+- Priority: P1
+- Severity: Critical
+- Status: In Progress
+- Component: Stripe payment webhook handler
+- Category: Integration
+- Module: Checkout & Payments
+- Created Date: 2026-01-04
+- Closed Date: -
+- Root Cause: Likely the webhook handler runs the order update, stock deduction, and email in one request and exceeds the Stripe timeout (504). The failed event is not retried or reconciled.
+- Tags: Backend
+- Area Path: SmartphoneShop\Backend\Checkout\Webhooks
 
 - Steps to Reproduce:
 
@@ -286,6 +483,18 @@ Bug example 11:
 
 - Description: On the Checkout page, a double click on the "Pay now" button submits the payment twice. The customer sees two orders in the order history and two charges in Stripe for the same cart.
 
+- Priority: P1
+- Severity: High
+- Status: Ready for QA
+- Component: Pay now button, order creation
+- Category: Functional
+- Module: Checkout & Payments
+- Created Date: 2026-02-03
+- Closed Date: -
+- Root Cause: Likely the button is not disabled after the first click and the checkout request has no idempotency key.
+- Tags: Backend, Frontend
+- Area Path: SmartphoneShop\Frontend\Customer\Checkout
+
 - Steps to Reproduce:
 
 1. Log in as an existing customer (user ID 912)
@@ -313,6 +522,18 @@ Bug example 12:
 
 - Description: On the Products page, in the Cases category, filtering by compatibility returns products that are not compatible with the selected phone and also products that are out of stock.
 
+- Priority: P2
+- Severity: Medium
+- Status: To Do
+- Component: Catalog filters (compatibility)
+- Category: Functional
+- Module: Product Catalog
+- Created Date: 2026-02-08
+- Closed Date: -
+- Root Cause: To be confirmed
+- Tags: Backend
+- Area Path: SmartphoneShop\Backend\Catalog
+
 - Steps to Reproduce:
 
 1. Open the Products page as a visitor (no account)
@@ -339,6 +560,18 @@ Bug example 13:
 
 - Description: A logged-in customer can see the order details (name, address, phone, items) of another customer by changing the order ID in the order details URL. Customers must access only their own data.
 
+- Priority: P1
+- Severity: Critical
+- Status: Ready for QA
+- Component: Order details endpoint and page, authorization
+- Category: Security
+- Module: Order Management & Delivery
+- Created Date: 2026-02-27
+- Closed Date: -
+- Root Cause: Broken access control (IDOR). GET /api/orders/:id likely loads the order by ID only and does not check that the order belongs to the user in the JWT.
+- Tags: Backend, Frontend
+- Area Path: SmartphoneShop\Backend\Orders
+
 - Steps to Reproduce:
 
 1. Log in as Customer A (user ID 912) and open the order details of order 90312 (the URL contains /orders/90312)
@@ -363,6 +596,18 @@ Bug example 14:
 - Summary (Title): [BUG-014] - Stock is not released after a failed payment, so the product shows as out of stock
 
 - Description: When a customer's card is declined at Checkout, the reserved unit is not released back to the stock. The product with 1 unit left stays unavailable for other customers, although no order was paid.
+
+- Priority: P1
+- Severity: High
+- Status: In Progress
+- Component: Stock reservation release
+- Category: Functional
+- Module: Inventory Management
+- Created Date: 2026-03-07
+- Closed Date: -
+- Root Cause: Likely the declined payment event does not trigger the release, and the 15-minute expiry job does not release the reservation.
+- Tags: Backend
+- Area Path: SmartphoneShop\Backend\Inventory
 
 - Steps to Reproduce:
 
@@ -393,6 +638,18 @@ Bug example 15:
 
 - Description: Returns are allowed within 30 days of delivery. A customer with an order delivered 31 days ago can still create a return request and receive the return label.
 
+- Priority: P2
+- Severity: High
+- Status: Ready for Release
+- Component: Return eligibility check
+- Category: Functional
+- Module: Order Management & Delivery
+- Created Date: 2026-03-25
+- Closed Date: -
+- Root Cause: Likely an off-by-one error or a UTC/local date conversion in the 30-day comparison.
+- Tags: Backend
+- Area Path: SmartphoneShop\Backend\Orders
+
 - Steps to Reproduce:
 
 1. Log in as the test customer "Customer (return window)" (user ID 2210) in Staging
@@ -419,6 +676,18 @@ Bug example 16:
 
 - Description: When a customer adds a delivery address that contains valid special characters (ă, â, î, ș, ț), the form shows a validation error and the address cannot be saved. The customer cannot continue to payment.
 
+- Priority: To be prioritised
+- Severity: Medium
+- Status: To Do
+- Component: Delivery address form validation
+- Category: Functional
+- Module: Checkout & Payments
+- Created Date: 2026-04-26
+- Closed Date: -
+- Root Cause: To be confirmed
+- Tags: Backend, Frontend
+- Area Path: SmartphoneShop\Backend\Users
+
 - Steps to Reproduce:
 
 1. Log in as a new customer (user ID 2301) in Staging
@@ -444,6 +713,18 @@ Bug example 17:
 - Summary (Title): [BUG-017] - Order is created with a modified product price sent from the client
 
 - Description: The price must be confirmed server-side at checkout. When the price in the checkout request is changed with browser DevTools, the order is accepted and paid with the modified price.
+
+- Priority: P1
+- Severity: Critical
+- Status: Ready for Release
+- Component: Checkout API, price calculation
+- Category: Security
+- Module: Checkout & Payments
+- Created Date: 2026-05-22
+- Closed Date: -
+- Root Cause: Likely the backend uses the unitPrice from the request body instead of the catalog price.
+- Tags: Backend
+- Area Path: SmartphoneShop\Backend\Checkout
 
 - Steps to Reproduce:
 
@@ -473,6 +754,18 @@ Bug example 18:
 
 - Description: The security policy requires rate limiting and an account lockout on login. A customer account can be used for an unlimited number of wrong password attempts, which allows brute-force attacks.
 
+- Priority: P1
+- Severity: High
+- Status: To Do
+- Component: Login rate limiting and account lockout
+- Category: Security
+- Module: User Accounts & Authentication
+- Created Date: 2026-08-21
+- Closed Date: -
+- Root Cause: Likely the failed-attempt counter and the Redis rate limit are not implemented or not enabled for the login endpoint.
+- Tags: Backend
+- Area Path: SmartphoneShop\Backend\Auth
+
 - Steps to Reproduce:
 
 1. Open the Login page in Staging
@@ -499,6 +792,18 @@ Bug example 19:
 
 - Description: A newly registered customer who did not verify the email address can add products to the cart, pay, and receive an order confirmation. The email verification is required before the customer can buy.
 
+- Priority: P1
+- Severity: High
+- Status: Ready for QA
+- Component: Checkout eligibility check
+- Category: Functional
+- Module: Checkout & Payments
+- Created Date: 2026-08-27
+- Closed Date: -
+- Root Cause: Likely the checkout does not check the email verification status on the server.
+- Tags: Backend, Frontend
+- Area Path: SmartphoneShop\Backend\Checkout
+
 - Steps to Reproduce:
 
 1. Register a new account with the email test.unverified@example.com in Staging and do not open the verification link
@@ -524,6 +829,18 @@ Bug example 20:
 
 - Description: A customer cancels a paid order before it is shipped. The order status changes to "Cancelled", but no refund is created in Stripe and the customer is not notified.
 
+- Priority: P1
+- Severity: Critical
+- Status: Blocked
+- Component: Order cancellation, Stripe refund
+- Category: Integration
+- Module: Order Management & Delivery
+- Created Date: 2026-08-30
+- Closed Date: -
+- Root Cause: Likely the cancellation flow does not call the Stripe refund API, or the call fails silently. Retesting is blocked by the unstable Stripe sandbox.
+- Tags: Backend
+- Area Path: SmartphoneShop\Backend\Orders
+
 - Steps to Reproduce:
 
 1. Log in as an existing customer (user ID 912) in Staging
@@ -543,4 +860,183 @@ Bug example 20:
 - Additional Notes or Metadata (e.g., environment, logs, device, browser, version):
 User ID 912, order ID 90470, Stripe payment intent pi_test_8Ht41, Staging, Windows 11, Chrome latest version
 error log: cancel-refund-8812046.JSON
+
+
+Bug example 21:
+
+- Summary (Title): [BUG-021] - Verification link older than 24 hours still verifies the account
+
+- Description: Registration links are valid for 24 hours (STORY-1351, AC3). A link opened after that time still changes the account status to "Verified".
+
+- Priority: P2
+- Severity: Medium
+- Status: New
+- Component: Email verification link
+- Category: Functional
+- Module: User Accounts & Authentication
+- Created Date: 2026-09-15
+- Closed Date: -
+- Root Cause: Likely the link expiry is not checked on the server.
+- Tags: Backend
+- Area Path: SmartphoneShop\Backend\Auth
+
+- Steps to Reproduce:
+
+1. Register a new account in Staging with a unique email (user ID 2401)
+
+2. Wait 24 hours and 1 minute, or move the server time forward by that amount
+
+3. Open the verification link from the email
+
+- Actual Result: The account status changes to "Verified" and the user can log in.
+
+- Expected Result: The message "This link has expired" is displayed, the account stays "Unverified", and an option to resend the verification email is offered.
+
+- Additional Notes or Metadata (e.g., environment, logs, device, browser, version):
+User ID 2401, Staging, Windows 11, Chrome latest version
+Possible cause: the link expiry is not checked on the server.
+
+
+Bug example 22:
+
+- Summary (Title): [BUG-022] - Registration with "John@Example.com" succeeds when "john@example.com" already exists
+
+- Description: Email uniqueness must not be case sensitive (STORY-1351, AC4). A second account is created that differs only by letter case.
+
+- Priority: P2
+- Severity: Medium
+- Status: New
+- Component: Sign up, email uniqueness
+- Category: Functional
+- Module: User Accounts & Authentication
+- Created Date: 2026-09-17
+- Closed Date: -
+- Root Cause: Likely the unique constraint on the email column is case sensitive.
+- Tags: Backend
+- Area Path: SmartphoneShop\Backend\Auth
+
+- Steps to Reproduce:
+
+1. Register an account with "john@example.com" in Staging
+
+2. Log out and open the Sign up page
+
+3. Enter "John@Example.com" with valid data and a valid password, accept the Terms and Privacy Policy, and submit
+
+- Actual Result: A second account is created and a verification email is sent. Both accounts exist in the database.
+
+- Expected Result: The registration is rejected with the generic message "Unable to register with this email", and no second account is created.
+
+- Additional Notes or Metadata (e.g., environment, logs, device, browser, version):
+Staging, Windows 11, Firefox latest version
+Possible cause: the unique constraint on the email column is case sensitive.
+
+
+Bug example 23:
+
+- Summary (Title): [BUG-023] - Cancelling an order does not return the units to the available stock
+
+- Description: When a customer cancels a paid order before shipment, the refund works, but the units are not added back to the stock (STORY-1354, AC2).
+
+- Priority: P2
+- Severity: High
+- Status: New
+- Component: Order cancellation, stock release
+- Category: Functional
+- Module: Inventory Management
+- Created Date: 2026-09-21
+- Closed Date: -
+- Root Cause: To be confirmed
+- Tags: Backend
+- Area Path: SmartphoneShop\Backend\Inventory
+
+- Steps to Reproduce:
+
+1. Prepare a product with stock = 5 (e.g., "Anker 20W USB-C Charger", product_ID 2045) in Staging
+
+2. Log in as an existing customer (user ID 912), buy 2 units, and wait until the order status is "Paid" (stock = 3)
+
+3. Open "My orders", select the order, click "Cancel order", and confirm
+
+4. Check the order status and the product stock in the Admin Back Office
+
+- Actual Result: The order status is "Cancelled" and the refund is created, but the stock stays 3.
+
+- Expected Result: The order status is "Cancelled", the refund is created, and the stock returns to 5.
+
+- Additional Notes or Metadata (e.g., environment, logs, device, browser, version):
+User ID 912, product_ID 2045, Staging, Windows 11, Chrome latest version
+
+
+Bug example 24:
+
+- Summary (Title): [BUG-024] - Support agent can change the status of a "Delivered" order back to "Processing"
+
+- Description: Order status transitions are restricted in the back office (STORY-1355, AC3). An invalid transition from "Delivered" to "Processing" is accepted.
+
+- Priority: P2
+- Severity: High
+- Status: New
+- Component: Back office order status transitions
+- Category: Functional
+- Module: Admin Back Office
+- Created Date: 2026-09-28
+- Closed Date: -
+- Root Cause: Likely the allowed status transitions are not validated on the server (the API also returns 200).
+- Tags: Backend
+- Area Path: SmartphoneShop\Backend\Admin
+
+- Steps to Reproduce:
+
+1. Log in to the Admin Back Office as a Support Agent in Staging
+
+2. Search for an order in status "Delivered" (e.g., order ID 88140)
+
+3. Open the order and change the status to "Processing"
+
+4. Save the change and reopen the order
+
+- Actual Result: The status is saved as "Processing", and the customer receives a notification that the order is being prepared.
+
+- Expected Result: The system rejects the change and the status remains "Delivered". No notification is sent.
+
+- Additional Notes or Metadata (e.g., environment, logs, device, browser, version):
+Order ID 88140, Support Agent role, Staging, Windows 11, Chrome latest version
+The same request through the API (PATCH /api/admin/orders/88140) also returns 200.
+
+
+Bug example 25:
+
+- Summary (Title): [BUG-025] - A newly created product is visible in the public catalog before it is published
+
+- Description: A new product must have status "Hidden" until it is published (STORY-1357, AC1). The product appears in the catalog and search results immediately after saving.
+
+- Priority: To be prioritised
+- Severity: Medium
+- Status: New
+- Component: Product creation, product visibility
+- Category: Functional
+- Module: Admin Back Office
+- Created Date: 2026-10-01
+- Closed Date: -
+- Root Cause: To be confirmed
+- Tags: Backend, Frontend
+- Area Path: SmartphoneShop\Backend\Catalog
+
+- Steps to Reproduce:
+
+1. Log in to the Admin Back Office as a Catalog Manager in Staging
+
+2. Create a product with all required fields: "Techsuit Clear Case iPhone 17", brand Techsuit, category case, price 19.99 EUR, stock 50, 1 image, description
+
+3. Click "Save" without publishing
+
+4. Open the public catalog as a visitor (no account) and search for "Techsuit Clear Case iPhone 17"
+
+- Actual Result: The product has status "Active" and is listed in the catalog. A visitor can open the product page.
+
+- Expected Result: The product has status "Hidden" and is not shown in the catalog, search results, or by direct URL until it is published.
+
+- Additional Notes or Metadata (e.g., environment, logs, device, browser, version):
+Catalog Manager and Visitor roles, Staging, Windows 11, Chrome latest version
 ```

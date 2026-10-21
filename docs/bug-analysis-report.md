@@ -2,6 +2,8 @@
 
 ## Overview
 
+This report analyses the bugs in the provided CSV data to show how defects are spread across modules, which areas carry the highest risk, and where test automation would have caught the most issues. It ends with a prioritised list of automation candidates and the test cases to create.
+
 ### High Bug Trend Modules
 
 | Module | Bug Count | Critical Count | Automation Gap |
@@ -63,46 +65,25 @@ pie title Bugs by status
 
 ### Automation Candidates Table
 
-Bugs that could have been caught by automated tests: 33 of 35 (API 19, Unit 8, UI 6).
+Top 14 bugs that could have been caught by automated tests (API 9, Unit 1, UI 4). Selected by severity and regression risk. Black Friday (BF2026) promotion bugs are excluded; only the general coupon code bug is kept.
 
 | # | Bug ID | Title | Component | Type of Automation | Suggested Test Case |
 |---|---|---|---|---|---|
 | 1 | BUG-001 | User cannot login after password reset | Password reset and login | API | Lock the account with 3 wrong logins, reset the password, then log in with the new one and expect 200. |
-| 2 | BUG-002 | OS filter Android shows iOS devices | Catalog filters (OS) | API | Call the catalog with `os=Android` and assert every item has OS = Android. |
-| 3 | BUG-003 | Coupon "10PERCENTFIRSTORDER" not working | Coupon calculation | Unit | A first order with the coupon reduces the total by 10%. |
-| 4 | BUG-004 | BF2026 discounts both units | Coupon calculation (BF2026) | Unit | With 2 units at 1000.00, assert the discount is 200.00 and the total is 1800.00. |
-| 5 | BUG-005 | BF2026 applied without a valid token | Coupon API, auth guard | API | POST `/api/checkout/coupon` with no or an expired token returns 401 and no discount. |
-| 6 | BUG-006 | BF2026 accepted after promotion end | Coupon validity period | Unit | Run the validator at 2026-11-30 23:59:59 and 2026-12-01 00:00:00 (Europe/Bucharest). The first is accepted, the second rejected. |
-| 7 | BUG-007 | No redemption record for BF2026 | Coupon redemption records | API | After a paid order with BF2026, assert the record exists and a second use is rejected. |
-| 8 | BUG-008 | Cart total not updated after quantity change | Cart totals display | UI | In Playwright, change the quantity from 1 to 3 and assert the line and cart totals show 3000.00 without a reload. |
-| 9 | BUG-009 | Overselling of the last unit | Stock reservation | API | Send 2 parallel checkouts for stock = 1 (k6 or Jest). Expect one success, one out-of-stock, and stock = 0. |
-| 10 | BUG-010 | Order stays Pending after Stripe payment | Stripe webhook handler | API | Send a signed `payment_intent.succeeded` event and assert the order becomes Paid, the email is sent, the stock is deducted, and the response is under the timeout. |
-| 11 | BUG-011 | Double click on "Pay now" creates 2 orders | Pay now button, order creation | UI | Double-click "Pay now" in Playwright and assert 1 order is created and the button is disabled. |
-| 12 | BUG-012 | Case filter shows Samsung and out-of-stock items | Catalog filters (compatibility) | API | Filter by `compatibility=iPhone 16` and assert only compatible items are returned, with out-of-stock items hidden or flagged. |
-| 13 | BUG-013 | Order details of another customer visible (IDOR) | Order details endpoint | API | Customer B calls `GET /api/orders/{A's id}` and expects 403 or 404 with no data. |
-| 14 | BUG-014 | Stock not released after failed payment | Stock reservation release | API | Pay with the declined card 4000 0000 0000 0002 and assert stock returns to 1. |
-| 15 | BUG-015 | Return accepted 31 days after delivery | Return eligibility check | Unit | Boundary test at day 29, 30 and 31. Day 31 is rejected. |
-| 16 | BUG-016 | Address with diacritics rejected | Delivery address validation | Unit | Validate "Șoseaua Pantelimon 245" and the city "Iași" as valid. |
-| 17 | BUG-017 | Order created with a modified client price | Checkout API, price calculation | API | POST `/api/checkout` with `unitPrice=1.00`. The total is the catalog price or the response is 400. |
-| 18 | BUG-018 | Account not locked after failed logins | Login rate limiting and lockout | API | Send 6 wrong logins. Expect 429 or a lock, and the correct password is rejected. |
-| 19 | BUG-019 | Unverified email can checkout | Checkout eligibility check | API | Checkout with an unverified user is blocked with an error. |
-| 20 | BUG-020 | Cancelled order not refunded | Order cancellation, Stripe refund | API | Cancel a paid order with the Stripe mock and assert the refund call, the status and the email. |
-| 21 | BUG-021 | Expired verification link still verifies | Email verification link | Unit | The token is rejected at 24 h 1 min and the account stays Unverified. |
-| 22 | BUG-022 | Email uniqueness is case sensitive | Sign up, email uniqueness | API | Register `john@example.com`, then `John@Example.com`. The second is rejected. |
-| 23 | BUG-023 | Cancel does not return units to stock | Order cancellation, stock release | API | Buy 2 of 5, cancel, and assert stock = 5. |
-| 24 | BUG-024 | Delivered order set back to Processing | Back office status transitions | API | PATCH Delivered to Processing is rejected and the status is unchanged. |
-| 25 | BUG-025 | New product visible before publishing | Product creation, visibility | API | Create a product and assert it is Hidden and absent from the catalog, search and direct URL. |
-| 26 | BUG-026 | "Pay now" not clickable on iPhone Safari | Checkout page layout | UI | Playwright WebKit with the iPhone 15 viewport. Scroll down and click "Pay now". |
-| 27 | BUG-027 | Old product URLs return 404 | URL routing and redirects | API | Request `/product/101` and expect 301 to the new URL, with a list of old URLs. |
-| 28 | BUG-028 | Carts empty after release | Cart data migration | API | Seed pre-release carts, run the migration, and assert `GET /cart` returns the items. |
-| 29 | BUG-029 | Session lost, token not refreshed | Token refresh in the API client | UI | After the access token expires, assert `/auth/refresh` returns 200 with the cookie and the user stays logged in. |
-| 30 | BUG-031 | Confirmation email has old logo, broken links, no total | Order confirmation email template | Unit | Render the template with a sample order and assert the total, address, logo and "View order" link. |
-| 31 | BUG-032 | Cookie banner on every load, scripts run before consent | Cookie consent banner | UI | Assert no analytics requests before consent. After "Reject all", assert the banner stays hidden and no requests are sent. |
-| 32 | BUG-033 | Saved addresses missing phone after migration | Delivery address data migration | Unit | Run the migration on sample rows and assert `contact_phone` equals the old `phone`. |
-| 33 | BUG-034 | Product card price shown without taxes | Product card price | UI | Compare the card, product page and checkout price (48.00 EUR). |
-| | **Total** | **33** | | API 19, Unit 8, UI 6 | |
-
-Not included: BUG-030 (performance budget, needs Lighthouse CI) and BUG-035 (Production secret, only a post-deploy smoke test would catch it).
+| 2 | BUG-003 | Coupon "10PERCENTFIRSTORDER" not working | Coupon calculation | Unit | A first order with the coupon reduces the total by 10%. |
+| 3 | BUG-009 | Overselling of the last unit | Stock reservation | API | Send 2 parallel checkouts for stock = 1 (k6 or Jest). Expect one success, one out-of-stock, and stock = 0. |
+| 4 | BUG-010 | Order stays Pending after Stripe payment | Stripe webhook handler | API | Send a signed `payment_intent.succeeded` event and assert the order becomes Paid, the email is sent, the stock is deducted, and the response is under the timeout. |
+| 5 | BUG-011 | Double click on "Pay now" creates 2 orders | Pay now button, order creation | UI | Double-click "Pay now" in Playwright and assert 1 order is created and the button is disabled. |
+| 6 | BUG-013 | Order details of another customer visible (IDOR) | Order details endpoint | API | Customer B calls `GET /api/orders/{A's id}` and expects 403 or 404 with no data. |
+| 7 | BUG-014 | Stock not released after failed payment | Stock reservation release | API | Pay with the declined card 4000 0000 0000 0002 and assert stock returns to 1. |
+| 8 | BUG-017 | Order created with a modified client price | Checkout API, price calculation | API | POST `/api/checkout` with `unitPrice=1.00`. The total is the catalog price or the response is 400. |
+| 9 | BUG-018 | Account not locked after failed logins | Login rate limiting and lockout | API | Send 6 wrong logins. Expect 429 or a lock, and the correct password is rejected. |
+| 10 | BUG-019 | Unverified email can checkout | Checkout eligibility check | API | Checkout with an unverified user is blocked with an error. |
+| 11 | BUG-020 | Cancelled order not refunded | Order cancellation, Stripe refund | API | Cancel a paid order with the Stripe mock and assert the refund call, the status and the email. |
+| 12 | BUG-026 | "Pay now" not clickable on iPhone Safari | Checkout page layout | UI | Playwright WebKit with the iPhone 15 viewport. Scroll down and click "Pay now". |
+| 13 | BUG-029 | Session lost, token not refreshed | Token refresh in the API client | UI | After the access token expires, assert `/auth/refresh` returns 200 with the cookie and the user stays logged in. |
+| 14 | BUG-034 | Product card price shown without taxes | Product card price | UI | Compare the card, product page and checkout price (48.00 EUR). |
+| | **Total** | **14** | | API 9, Unit 1, UI 4 | |
 
 
 ### Test Cases to Create

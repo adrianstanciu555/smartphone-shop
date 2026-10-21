@@ -1,0 +1,472 @@
+openapi: 3.0.3
+info:
+  title: Smartphone Shop REST API
+  version: 0.1.0
+  description: Modular monolith (NestJS). JWT access + refresh tokens.
+servers:
+  - url: https://api.smartphone-shop.com/v1
+  - url: https://staging-api.smartphone-shop.com/v1
+tags:
+  - {name: auth}
+  - {name: users}
+  - {name: catalog}
+  - {name: cart}
+  - {name: checkout}
+  - {name: orders}
+  - {name: inventory}
+  - {name: shipping}
+  - {name: admin}
+security:
+  - bearerAuth: []
+
+paths:
+  # ---------- auth ----------
+  /auth/register:
+    post:
+      tags: [auth]
+      security: []
+      summary: Sign up (sends verification email)
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/RegisterRequest'}}}}
+      responses:
+        '201': {description: Created, content: {application/json: {schema: {$ref: '#/components/schemas/User'}}}}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+  /auth/verify-email:
+    post:
+      tags: [auth]
+      security: []
+      summary: Verify email with token (expires after 24h)
+      requestBody: {required: true, content: {application/json: {schema: {type: object, required: [token], properties: {token: {type: string}}}}}}
+      responses:
+        '204': {description: Verified}
+        '410': {description: Token expired}
+  /auth/login:
+    post:
+      tags: [auth]
+      security: []
+      summary: Log in
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/LoginRequest'}}}}
+      responses:
+        '200': {description: OK, content: {application/json: {schema: {$ref: '#/components/schemas/TokenPair'}}}}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '429': {description: Account locked / rate limited after 5 failed attempts}
+  /auth/refresh:
+    post:
+      tags: [auth]
+      security: []
+      requestBody: {required: true, content: {application/json: {schema: {type: object, required: [refreshToken], properties: {refreshToken: {type: string}}}}}}
+      responses:
+        '200': {description: OK, content: {application/json: {schema: {$ref: '#/components/schemas/TokenPair'}}}}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+  /auth/logout:
+    post:
+      tags: [auth]
+      responses: {'204': {description: Logged out}}
+  /auth/password-reset/request:
+    post:
+      tags: [auth]
+      security: []
+      requestBody: {required: true, content: {application/json: {schema: {type: object, required: [email], properties: {email: {type: string, format: email}}}}}}
+      responses: {'202': {description: Accepted (same response whether or not the email exists)}}
+  /auth/password-reset/confirm:
+    post:
+      tags: [auth]
+      security: []
+      requestBody: {required: true, content: {application/json: {schema: {type: object, required: [token, newPassword], properties: {token: {type: string}, newPassword: {type: string, minLength: 8}}}}}}
+      responses: {'204': {description: Password changed}, '410': {description: Token expired}}
+
+  # ---------- users ----------
+  /users/me:
+    get:
+      tags: [users]
+      responses: {'200': {description: OK, content: {application/json: {schema: {$ref: '#/components/schemas/User'}}}}}
+    patch:
+      tags: [users]
+      requestBody: {content: {application/json: {schema: {$ref: '#/components/schemas/UserUpdate'}}}}
+      responses: {'200': {description: OK, content: {application/json: {schema: {$ref: '#/components/schemas/User'}}}}}
+  /users/me/addresses:
+    get:
+      tags: [users]
+      responses: {'200': {description: OK, content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/Address'}}}}}}
+    post:
+      tags: [users]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/AddressInput'}}}}
+      responses: {'201': {description: Created, content: {application/json: {schema: {$ref: '#/components/schemas/Address'}}}}}
+  /users/me/addresses/{addressId}:
+    parameters: [{$ref: '#/components/parameters/AddressId'}]
+    put:
+      tags: [users]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/AddressInput'}}}}
+      responses: {'200': {description: OK, content: {application/json: {schema: {$ref: '#/components/schemas/Address'}}}}}
+    delete:
+      tags: [users]
+      responses: {'204': {description: Deleted}}
+
+  # ---------- catalog (public) ----------
+  /products:
+    get:
+      tags: [catalog]
+      security: []
+      summary: List, search, filter, sort
+      parameters:
+        - {name: q, in: query, schema: {type: string}}
+        - {name: category, in: query, schema: {$ref: '#/components/schemas/Category'}}
+        - {name: brand, in: query, schema: {type: array, items: {type: string}}}
+        - {name: minPrice, in: query, schema: {type: number}}
+        - {name: maxPrice, in: query, schema: {type: number}}
+        - {name: compatibleWith, in: query, schema: {type: string}, description: Phone model for accessories}
+        - {name: inStock, in: query, schema: {type: boolean}}
+        - {name: sort, in: query, schema: {type: string, enum: [price_asc, price_desc, newest, popularity]}}
+        - {$ref: '#/components/parameters/Page'}
+        - {$ref: '#/components/parameters/PageSize'}
+      responses:
+        '200': {description: OK, content: {application/json: {schema: {$ref: '#/components/schemas/ProductPage'}}}}
+  /products/{productId}:
+    get:
+      tags: [catalog]
+      security: []
+      parameters: [{$ref: '#/components/parameters/ProductId'}]
+      responses:
+        '200': {description: OK, content: {application/json: {schema: {$ref: '#/components/schemas/Product'}}}}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /categories:
+    get:
+      tags: [catalog]
+      security: []
+      responses: {'200': {description: OK, content: {application/json: {schema: {type: array, items: {type: string}}}}}}
+
+  # ---------- cart ----------
+  /cart:
+    get:
+      tags: [cart]
+      responses: {'200': {description: OK, content: {application/json: {schema: {$ref: '#/components/schemas/Cart'}}}}}
+    delete:
+      tags: [cart]
+      responses: {'204': {description: Cleared}}
+  /cart/items:
+    post:
+      tags: [cart]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/CartItemInput'}}}}
+      responses:
+        '200': {description: OK, content: {application/json: {schema: {$ref: '#/components/schemas/Cart'}}}}
+        '409': {description: Insufficient stock}
+  /cart/items/{productId}:
+    parameters: [{$ref: '#/components/parameters/ProductId'}]
+    patch:
+      tags: [cart]
+      requestBody: {required: true, content: {application/json: {schema: {type: object, required: [quantity], properties: {quantity: {type: integer, minimum: 1}}}}}}
+      responses: {'200': {description: OK, content: {application/json: {schema: {$ref: '#/components/schemas/Cart'}}}}, '409': {description: Insufficient stock}}
+    delete:
+      tags: [cart]
+      responses: {'200': {description: OK, content: {application/json: {schema: {$ref: '#/components/schemas/Cart'}}}}}
+
+  # ---------- checkout ----------
+  /checkout/summary:
+    post:
+      tags: [checkout]
+      summary: Order summary (totals, delivery cost) before payment
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/CheckoutRequest'}}}}
+      responses: {'200': {description: OK, content: {application/json: {schema: {$ref: '#/components/schemas/OrderSummary'}}}}}
+  /checkout:
+    post:
+      tags: [checkout]
+      summary: Reserve stock, create order + Stripe PaymentIntent
+      parameters:
+        - {name: Idempotency-Key, in: header, required: true, schema: {type: string, format: uuid}}
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/CheckoutRequest'}}}}
+      responses:
+        '201': {description: Created, content: {application/json: {schema: {$ref: '#/components/schemas/CheckoutResponse'}}}}
+        '403': {description: Email not verified}
+        '409': {description: Stock unavailable or price changed}
+  /checkout/webhooks/stripe:
+    post:
+      tags: [checkout]
+      security: []
+      summary: Stripe webhook (signature verified, idempotent, order-independent)
+      parameters: [{name: Stripe-Signature, in: header, required: true, schema: {type: string}}]
+      requestBody: {required: true, content: {application/json: {schema: {type: object}}}}
+      responses: {'200': {description: Processed}, '400': {description: Invalid signature}}
+
+  # ---------- orders ----------
+  /orders:
+    get:
+      tags: [orders]
+      parameters:
+        - {name: status, in: query, schema: {$ref: '#/components/schemas/OrderStatus'}}
+        - {$ref: '#/components/parameters/Page'}
+        - {$ref: '#/components/parameters/PageSize'}
+      responses: {'200': {description: OK, content: {application/json: {schema: {$ref: '#/components/schemas/OrderPage'}}}}}
+  /orders/{orderId}:
+    parameters: [{$ref: '#/components/parameters/OrderId'}]
+    get:
+      tags: [orders]
+      responses:
+        '200': {description: OK, content: {application/json: {schema: {$ref: '#/components/schemas/Order'}}}}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /orders/{orderId}/cancel:
+    post:
+      tags: [orders]
+      summary: Cancel before shipment (triggers refund)
+      parameters: [{$ref: '#/components/parameters/OrderId'}]
+      responses: {'200': {description: OK, content: {application/json: {schema: {$ref: '#/components/schemas/Order'}}}}, '409': {description: Already shipped}}
+  /orders/{orderId}/tracking:
+    get:
+      tags: [shipping]
+      parameters: [{$ref: '#/components/parameters/OrderId'}]
+      responses: {'200': {description: OK, content: {application/json: {schema: {$ref: '#/components/schemas/Shipment'}}}}}
+  /orders/{orderId}/returns:
+    post:
+      tags: [orders]
+      summary: Request return (within 30 days of delivery)
+      parameters: [{$ref: '#/components/parameters/OrderId'}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/ReturnRequest'}}}}
+      responses: {'201': {description: Created, content: {application/json: {schema: {$ref: '#/components/schemas/Return'}}}}, '422': {description: Outside 30-day window}}
+
+  # ---------- admin (roles: catalog_manager, support_agent) ----------
+  /admin/products:
+    get: {tags: [admin], summary: List products, responses: {'200': {description: OK, content: {application/json: {schema: {$ref: '#/components/schemas/ProductPage'}}}}}}
+    post:
+      tags: [admin]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/ProductInput'}}}}
+      responses: {'201': {description: Created, content: {application/json: {schema: {$ref: '#/components/schemas/Product'}}}}}
+  /admin/products/{productId}:
+    parameters: [{$ref: '#/components/parameters/ProductId'}]
+    put:
+      tags: [admin]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/ProductInput'}}}}
+      responses: {'200': {description: OK, content: {application/json: {schema: {$ref: '#/components/schemas/Product'}}}}}
+    delete: {tags: [admin], responses: {'204': {description: Deleted}}}
+  /admin/inventory:
+    get:
+      tags: [inventory]
+      parameters: [{name: lowStockOnly, in: query, schema: {type: boolean}}]
+      responses: {'200': {description: OK, content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/StockLevel'}}}}}}
+  /admin/inventory/{productId}:
+    put:
+      tags: [inventory]
+      summary: Restock / adjust stock
+      parameters: [{$ref: '#/components/parameters/ProductId'}]
+      requestBody: {required: true, content: {application/json: {schema: {type: object, required: [delta, reason], properties: {delta: {type: integer}, reason: {type: string}}}}}}
+      responses: {'200': {description: OK, content: {application/json: {schema: {$ref: '#/components/schemas/StockLevel'}}}}}
+  /admin/orders:
+    get:
+      tags: [admin]
+      parameters:
+        - {name: status, in: query, schema: {$ref: '#/components/schemas/OrderStatus'}}
+        - {$ref: '#/components/parameters/Page'}
+        - {$ref: '#/components/parameters/PageSize'}
+      responses: {'200': {description: OK, content: {application/json: {schema: {$ref: '#/components/schemas/OrderPage'}}}}}
+  /admin/orders/{orderId}/status:
+    patch:
+      tags: [admin]
+      parameters: [{$ref: '#/components/parameters/OrderId'}]
+      requestBody: {required: true, content: {application/json: {schema: {type: object, required: [status], properties: {status: {$ref: '#/components/schemas/OrderStatus'}}}}}}
+      responses: {'200': {description: OK, content: {application/json: {schema: {$ref: '#/components/schemas/Order'}}}}}
+  /admin/orders/{orderId}/shipment:
+    post:
+      tags: [admin, shipping]
+      summary: Create courier shipment
+      parameters: [{$ref: '#/components/parameters/OrderId'}]
+      responses: {'201': {description: Created, content: {application/json: {schema: {$ref: '#/components/schemas/Shipment'}}}}}
+  /admin/returns/{returnId}/decision:
+    post:
+      tags: [admin]
+      parameters: [{name: returnId, in: path, required: true, schema: {type: string, format: uuid}}]
+      requestBody: {required: true, content: {application/json: {schema: {type: object, required: [decision], properties: {decision: {type: string, enum: [approve, reject]}, note: {type: string}}}}}}
+      responses: {'200': {description: OK, content: {application/json: {schema: {$ref: '#/components/schemas/Return'}}}}}
+  /admin/orders/{orderId}/refund:
+    post:
+      tags: [admin]
+      parameters: [{$ref: '#/components/parameters/OrderId'}]
+      requestBody: {content: {application/json: {schema: {type: object, properties: {amount: {type: number}, reason: {type: string}}}}}}
+      responses: {'200': {description: Refund issued}}
+  /admin/users:
+    get:
+      tags: [admin]
+      summary: Customer lookup
+      parameters: [{name: email, in: query, schema: {type: string}}, {name: q, in: query, schema: {type: string}}]
+      responses: {'200': {description: OK, content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/User'}}}}}}
+
+components:
+  securitySchemes:
+    bearerAuth: {type: http, scheme: bearer, bearerFormat: JWT}
+  parameters:
+    Page: {name: page, in: query, schema: {type: integer, minimum: 1, default: 1}}
+    PageSize: {name: pageSize, in: query, schema: {type: integer, minimum: 1, maximum: 100, default: 20}}
+    ProductId: {name: productId, in: path, required: true, schema: {type: string, format: uuid}}
+    OrderId: {name: orderId, in: path, required: true, schema: {type: string, format: uuid}}
+    AddressId: {name: addressId, in: path, required: true, schema: {type: string, format: uuid}}
+  responses:
+    Unauthorized: {description: Missing or invalid token, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+    Forbidden: {description: Insufficient role, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+    NotFound: {description: Not found (also returned for other users' resources), content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+    Conflict: {description: Conflict, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+    ValidationError: {description: Validation failed, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+  schemas:
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code: {type: string}
+        message: {type: string}
+        details: {type: array, items: {type: object, properties: {field: {type: string}, issue: {type: string}}}}
+    Role: {type: string, enum: [customer, catalog_manager, support_agent]}
+    Category: {type: string, enum: [smartphone, case, charger, cable, headphones, screen_protector]}
+    OrderStatus: {type: string, enum: [pending, paid, processing, shipped, delivered, cancelled, return_requested, returned, refunded, payment_failed]}
+    Money:
+      type: object
+      required: [amount, currency]
+      properties: {amount: {type: number, format: double}, currency: {type: string, example: EUR}}
+    RegisterRequest:
+      type: object
+      required: [email, password, name]
+      properties:
+        email: {type: string, format: email, maxLength: 254}
+        password: {type: string, minLength: 8, maxLength: 128}
+        name: {type: string, maxLength: 100}
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties: {email: {type: string, format: email}, password: {type: string}}
+    TokenPair:
+      type: object
+      required: [accessToken, refreshToken, expiresIn]
+      properties: {accessToken: {type: string}, refreshToken: {type: string}, expiresIn: {type: integer}}
+    User:
+      type: object
+      properties:
+        id: {type: string, format: uuid}
+        name: {type: string}
+        email: {type: string, format: email}
+        birthdate: {type: string, format: date}
+        phone: {type: string, example: '+44 7624 123456'}
+        country: {type: string, minLength: 2, maxLength: 2}
+        role: {$ref: '#/components/schemas/Role'}
+        emailVerified: {type: boolean}
+        accountStatus: {type: string, enum: [active, unverified, locked, suspended]}
+    UserUpdate:
+      type: object
+      properties: {name: {type: string}, birthdate: {type: string, format: date}, phone: {type: string}, country: {type: string}}
+    AddressInput:
+      type: object
+      required: [recipient, line1, city, postalCode, country, phone]
+      properties:
+        recipient: {type: string}
+        line1: {type: string}
+        line2: {type: string}
+        city: {type: string}
+        postalCode: {type: string}
+        country: {type: string, minLength: 2, maxLength: 2}
+        phone: {type: string}
+        isDefault: {type: boolean}
+    Address:
+      allOf:
+        - {$ref: '#/components/schemas/AddressInput'}
+        - {type: object, properties: {id: {type: string, format: uuid}}}
+    Product:
+      type: object
+      properties:
+        id: {type: string, format: uuid}
+        sku: {type: string}
+        name: {type: string}
+        brand: {type: string}
+        category: {$ref: '#/components/schemas/Category'}
+        description: {type: string}
+        specs: {type: object, additionalProperties: {type: string}}
+        price: {$ref: '#/components/schemas/Money'}
+        images: {type: array, items: {type: string, format: uri}}
+        compatibleWith: {type: array, items: {type: string}}
+        availability: {type: string, enum: [in_stock, low_stock, out_of_stock]}
+    ProductInput:
+      type: object
+      required: [sku, name, brand, category, price]
+      properties:
+        sku: {type: string}
+        name: {type: string}
+        brand: {type: string}
+        category: {$ref: '#/components/schemas/Category'}
+        description: {type: string}
+        specs: {type: object, additionalProperties: {type: string}}
+        price: {$ref: '#/components/schemas/Money'}
+        images: {type: array, items: {type: string, format: uri}}
+        compatibleWith: {type: array, items: {type: string}}
+    ProductPage:
+      type: object
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/Product'}}
+        page: {type: integer}
+        pageSize: {type: integer}
+        total: {type: integer}
+    StockLevel:
+      type: object
+      properties:
+        productId: {type: string, format: uuid}
+        onHand: {type: integer}
+        reserved: {type: integer}
+        available: {type: integer}
+        lowStockThreshold: {type: integer}
+    CartItemInput:
+      type: object
+      required: [productId, quantity]
+      properties: {productId: {type: string, format: uuid}, quantity: {type: integer, minimum: 1}}
+    CartItem:
+      type: object
+      properties:
+        productId: {type: string, format: uuid}
+        name: {type: string}
+        quantity: {type: integer}
+        unitPrice: {$ref: '#/components/schemas/Money'}
+        lineTotal: {$ref: '#/components/schemas/Money'}
+        available: {type: boolean}
+    Cart:
+      type: object
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/CartItem'}}
+        total: {$ref: '#/components/schemas/Money'}
+    CheckoutRequest:
+      type: object
+      required: [addressId, deliveryMethod]
+      properties: {addressId: {type: string, format: uuid}, deliveryMethod: {type: string, enum: [standard, express]}}
+    OrderSummary:
+      type: object
+      properties: {subtotal: {$ref: '#/components/schemas/Money'}, delivery: {$ref: '#/components/schemas/Money'}, total: {$ref: '#/components/schemas/Money'}}
+    CheckoutResponse:
+      type: object
+      properties: {orderId: {type: string, format: uuid}, paymentClientSecret: {type: string}, reservationExpiresAt: {type: string, format: date-time}}
+    Order:
+      type: object
+      properties:
+        id: {type: string, format: uuid}
+        number: {type: string}
+        status: {$ref: '#/components/schemas/OrderStatus'}
+        items: {type: array, items: {$ref: '#/components/schemas/CartItem'}}
+        total: {$ref: '#/components/schemas/Money'}
+        address: {$ref: '#/components/schemas/Address'}
+        createdAt: {type: string, format: date-time}
+        deliveredAt: {type: string, format: date-time, nullable: true}
+    OrderPage:
+      type: object
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/Order'}}
+        page: {type: integer}
+        pageSize: {type: integer}
+        total: {type: integer}
+    Shipment:
+      type: object
+      properties:
+        carrier: {type: string}
+        trackingNumber: {type: string}
+        status: {type: string, enum: [created, in_transit, out_for_delivery, delivered, failed]}
+        events: {type: array, items: {type: object, properties: {at: {type: string, format: date-time}, description: {type: string}}}}
+    ReturnRequest:
+      type: object
+      required: [items, reason]
+      properties:
+        items: {type: array, items: {type: object, required: [productId, quantity], properties: {productId: {type: string, format: uuid}, quantity: {type: integer}}}}
+        reason: {type: string}
+    Return:
+      type: object
+      properties:
+        id: {type: string, format: uuid}
+        orderId: {type: string, format: uuid}
+        status: {type: string, enum: [requested, approved, rejected, received, refunded]}

@@ -224,3 +224,16 @@ pie title Bugs by priority
     "To be prioritised" : 2
 ```
 
+#### Bug Count by Status
+
+```mermaid
+pie title Bugs by status
+    "In Progress" : 9
+    "To Do" : 6
+    "New" : 6
+    "Ready for QA" : 5
+    "Closed" : 4
+    "Ready for Release" : 3
+    "Blocked" : 2
+```
+

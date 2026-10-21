@@ -4,7 +4,7 @@
 
 This report analyses the bugs in the provided CSV data to show how defects are spread across modules, which areas carry the highest risk, and where test automation would have caught the most issues. It ends with a prioritised list of automation candidates and the test cases to create.
 
-### High Bug Trend Modules
+### 1. High Bug Trend Modules
 
 | Module | Bug Count | Critical Count | Automation Gap |
 |---|---|---|---|
@@ -19,7 +19,7 @@ This report analyses the bugs in the provided CSV data to show how defects are s
 
 Top 3 high-density areas (bold): 24 of 35 bugs (68.6%).
 
-### Bug Metrics Summary
+### 2. Bug Metrics Summary
 
 | Metric | Value |
 |---|---|
@@ -61,17 +61,14 @@ pie title Bugs by severity
 | **Total** | | **35** |
 
 ```mermaid
-pie title Bugs by status
-    "In Progress" : 9
-    "To Do" : 6
-    "New" : 6
-    "Ready for QA" : 5
-    "Closed" : 4
-    "Ready for Release" : 3
-    "Blocked" : 2
+xychart-beta
+    title "Bugs by status"
+    x-axis ["In Progress", "To Do", "New", "Ready for QA", "Closed", "Ready for Release", "Blocked"]
+    y-axis "Bugs" 0 --> 10
+    bar [9, 6, 6, 5, 4, 3, 2]
 ```
 
-### Automation Candidates Table
+### 3. Automation Candidates Table
 
 Top 15 bugs that could have been caught by automated tests (API 10, Unit 1, UI 4). Selected by severity and regression risk. Black Friday (BF2026) promotion bugs are excluded; only the general coupon code bug is kept.
 
@@ -95,7 +92,7 @@ Top 15 bugs that could have been caught by automated tests (API 10, Unit 1, UI 4
 | | **Total** | **15** | | API 10, Unit 1, UI 4 | |
 
 
-### Test Cases to Create
+### 4. Test Cases to Create
 
 High-level test cases that would have detected each bug earlier (one per bug, 35 in total).
 
@@ -138,7 +135,7 @@ High-level test cases that would have detected each bug earlier (one per bug, 35
 | TC-35 | BUG-035 | Post-deploy webhook smoke test | 1. After the infrastructure deploy, place an order with the smoke test account. 2. Check the webhook delivery in Stripe. 3. Verify the response is 200 (no "Invalid signature"). 4. Verify the order is Paid and the email is sent. |
 | | **Total** | **35 test cases** | |
 
-### Risk-Based Prioritisation Table
+### 5. Risk-Based Prioritisation Table
 
 Risk Score = Critical x 3 + High x 2 + Medium x 1 (bugs of the module).
 
@@ -152,7 +149,7 @@ Risk Score = Critical x 3 + High x 2 + Medium x 1 (bugs of the module).
 | Shopping Cart | 3 (1x2 + 1) | Add a UI test for totals after a quantity change; verify cart migration with pre-release data. |
 | Admin Back Office | 3 (1x2 + 1) | Start automation for status transitions and product visibility. |
 
-### Charts & Visuals
+### 6. Charts & Visuals
 
 #### Bug Count by Module
 

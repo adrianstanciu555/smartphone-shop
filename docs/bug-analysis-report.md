@@ -11,7 +11,7 @@ This report analyses the bugs in the provided CSV data to show how defects are s
 | **Checkout & Payments** | 12 | 6 | Stripe webhook delays, retries and invalid signatures; double-click and idempotency; coupon rules and date boundaries (BF2026); price tampering; iOS Safari / mobile checkout. |
 | **User Accounts & Authentication** | 7 | 0 | Login lockout and rate limiting; token refresh and session expiry; verification link expiry; email case uniqueness; cookie consent; address data migration checks. |
 | **Product Catalog** | 5 | 0 | Filter correctness (OS, compatibility, out-of-stock); old-URL 301 redirects; price with taxes consistency; image size and LCP budget. |
-| Order Management & Delivery | 4 | 2 | Authorization (IDOR) on order details; Stripe refund on cancellation (sandbox unstable); 30-day return boundary; email template content. |
+| Order Management & Delivery | 4 | 2 | Authorisation (IDOR) on order details; Stripe refund on cancellation (sandbox unstable); 30-day return boundary; email template content. |
 | Inventory Management | 3 | 1 | Concurrent last-unit purchase; stock release after failed payment and cancellation. |
 | Shopping Cart | 2 | 0 | Totals refresh after quantity change; cart data migration across releases. |
 | Admin Back Office | 2 | 0 | Little automation overall; order status transitions and product visibility (Hidden until published). |
@@ -130,7 +130,7 @@ High-level test cases that would have detected each bug earlier (one per bug, 35
 | TC-27 | BUG-027 | Old product URLs redirect | 1. Request `/product/101` and a sample of old URLs. 2. Verify a 301 response to `/products/[brand]/[slug]-101`. 3. Verify the product page loads. |
 | TC-28 | BUG-028 | Pre-release carts survive the migration | 1. Seed carts in the old format. 2. Run the migration or deploy. 3. Log in and open the Cart. 4. Verify all items, prices and availability are shown. |
 | TC-29 | BUG-029 | Session refreshes silently | 1. Log in with "Remember me". 2. Wait until the access token expires (5 min). 3. Open the Cart. 4. Verify `/auth/refresh` returns 200 with the cookie and the user stays logged in. |
-| TC-30 | BUG-030 | Catalog image weight and LCP budget | 1. Open the catalog on Fast 4G throttling. 2. Check the image sizes and LCP in Lighthouse. 3. Verify images are optimized (under 200 KB) and LCP is under 2.5 s. |
+| TC-30 | BUG-030 | Catalog image weight and LCP budget | 1. Open the catalog on Fast 4G throttling. 2. Check the image sizes and LCP in Lighthouse. 3. Verify images are optimised (under 200 KB) and LCP is under 2.5 s. |
 | TC-31 | BUG-031 | Order confirmation email content | 1. Place an order. 2. Open the email. 3. Verify the new logo, order number, items, total with taxes and delivery address. 4. Click "View order" and verify the page opens. |
 | TC-32 | BUG-032 | Cookie consent is respected and saved | 1. Open the site in a private window and check the network requests. 2. Verify no analytics or marketing requests before consent. 3. Click "Reject all" and navigate. 4. Verify the banner stays hidden and no tracking requests are sent. |
 | TC-33 | BUG-033 | Address phone numbers are preserved by the migration | 1. Run the migration on sample addresses with phone numbers. 2. Compare `phone` and `contact_phone`. 3. Open a saved address and Checkout. 4. Verify the phone is pre-filled. |
@@ -138,7 +138,7 @@ High-level test cases that would have detected each bug earlier (one per bug, 35
 | TC-35 | BUG-035 | Post-deploy webhook smoke test | 1. After the infrastructure deploy, place an order with the smoke test account. 2. Check the webhook delivery in Stripe. 3. Verify the response is 200 (no "Invalid signature"). 4. Verify the order is Paid and the email is sent. |
 | | **Total** | **35 test cases** | |
 
-### Risk-Based Prioritization Table
+### Risk-Based Prioritisation Table
 
 Risk Score = Critical x 3 + High x 2 + Medium x 1 (bugs of the module).
 
@@ -146,7 +146,7 @@ Risk Score = Critical x 3 + High x 2 + Medium x 1 (bugs of the module).
 |---|---|---|
 | Checkout & Payments | 29 (6x3 + 5x2 + 1) | Highest priority: add API and E2E tests for webhooks (retry, duplicate, invalid signature), idempotency, coupon and date boundaries, server-side price; run a mobile Safari check and post-deploy smoke test. |
 | User Accounts & Authentication | 12 (5x2 + 2) | Add negative auth tests (lockout, expired token, refresh, verification expiry, email case); test the migration of addresses and the cookie consent. |
-| Order Management & Delivery | 9 (2x3 + 1x2 + 1) | Add IDOR and authorization tests; test the Stripe refund on cancellation with mocks; test the 30-day boundary (day 29, 30, 31). |
+| Order Management & Delivery | 9 (2x3 + 1x2 + 1) | Add IDOR and authorisation tests; test the Stripe refund on cancellation with mocks; test the 30-day boundary (day 29, 30, 31). |
 | Product Catalog | 8 (3x2 + 2) | Add filter tests with edge-case data; check 301 redirects, price with taxes and the LCP budget in CI. |
 | Inventory Management | 7 (1x3 + 2x2) | Add concurrency tests (k6, Jest) for the last unit and release on failed payment and cancellation. |
 | Shopping Cart | 3 (1x2 + 1) | Add a UI test for totals after a quantity change; verify cart migration with pre-release data. |

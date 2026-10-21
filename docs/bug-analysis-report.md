@@ -24,13 +24,21 @@ Top 3 high-density areas (bold): 24 of 35 bugs (68.6%).
 | Metric | Value |
 |---|---|
 | Total bugs | 35 |
-| Critical bugs | 9 (High 18, Medium 8, Low 0) |
-| P1 bugs | 21 (P2 12, To be prioritised 2) |
+| Critical bugs | 9 |
+| P1 bugs | 21 |
 | Closed bugs | 4 (BUG-001, 002, 003, 008) |
 | Average resolution time | 8 days (closed bugs only: 8 + 5 + 8 + 11 = 32 days / 4) |
 | Open bugs | 31 |
 
 #### Severity distribution
+
+| Severity | Bugs | Count |
+|---|---|---|
+| Critical | 004, 005, 009, 010, 013, 017, 020, 026, 035 | 9 |
+| High | 001, 003, 006, 007, 011, 014, 015, 018, 019, 023, 024, 027, 028, 029, 030, 032, 033, 034 | 18 |
+| Medium | 002, 008, 012, 016, 021, 022, 025, 031 | 8 |
+| Low | | 0 |
+| **Total** | | **35** |
 
 ```mermaid
 pie title Bugs by severity
@@ -65,7 +73,7 @@ pie title Bugs by status
 
 ### Automation Candidates Table
 
-Top 14 bugs that could have been caught by automated tests (API 9, Unit 1, UI 4). Selected by severity and regression risk. Black Friday (BF2026) promotion bugs are excluded; only the general coupon code bug is kept.
+Top 15 bugs that could have been caught by automated tests (API 10, Unit 1, UI 4). Selected by severity and regression risk. Black Friday (BF2026) promotion bugs are excluded; only the general coupon code bug is kept.
 
 | # | Bug ID | Title | Component | Type of Automation | Suggested Test Case |
 |---|---|---|---|---|---|
@@ -83,7 +91,8 @@ Top 14 bugs that could have been caught by automated tests (API 9, Unit 1, UI 4)
 | 12 | BUG-026 | "Pay now" not clickable on iPhone Safari | Checkout page layout | UI | Playwright WebKit with the iPhone 15 viewport. Scroll down and click "Pay now". |
 | 13 | BUG-029 | Session lost, token not refreshed | Token refresh in the API client | UI | After the access token expires, assert `/auth/refresh` returns 200 with the cookie and the user stays logged in. |
 | 14 | BUG-034 | Product card price shown without taxes | Product card price | UI | Compare the card, product page and checkout price (48.00 EUR). |
-| | **Total** | **14** | | API 9, Unit 1, UI 4 | |
+| 15 | BUG-035 | Stripe webhooks rejected with 400 after infrastructure migration | Stripe webhook signature validation | API | Post-deploy smoke test: send a signed webhook to the new service and assert 200 (not "Invalid signature"), the order becomes Paid and the email is sent. |
+| | **Total** | **15** | | API 10, Unit 1, UI 4 | |
 
 
 ### Test Cases to Create

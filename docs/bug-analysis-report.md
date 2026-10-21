@@ -162,9 +162,20 @@ Risk Score = Critical x 3 + High x 2 + Medium x 1 (bugs of the module).
 | Shopping Cart | 3 (1x2 + 1) | Add a UI test for totals after a quantity change; verify cart migration with pre-release data. |
 | Admin Back Office | 3 (1x2 + 1) | Start automation for status transitions and product visibility. |
 
-### Charts & Visuals (optional)
+### Charts & Visuals
 
 #### Bug Count by Module
+
+| Module | Bugs | Count |
+|---|---|---|
+| Checkout & Payments | 003, 004, 005, 006, 007, 010, 011, 016, 017, 019, 026, 035 | 12 |
+| User Accounts & Authentication | 001, 018, 021, 022, 029, 032, 033 | 7 |
+| Product Catalog | 002, 012, 027, 030, 034 | 5 |
+| Order Management & Delivery | 013, 015, 020, 031 | 4 |
+| Inventory Management | 009, 014, 023 | 3 |
+| Shopping Cart | 008, 028 | 2 |
+| Admin Back Office | 024, 025 | 2 |
+| **Total** | | **35** |
 
 ```mermaid
 pie title Bugs by module
@@ -179,24 +190,32 @@ pie title Bugs by module
 
 #### Bug Split by Category
 
+Based on the Category column of the CSV.
+
 | Category | Bugs | Count |
 |---|---|---|
-| BE | 001, 003, 004, 005, 006, 007, 009, 010, 014, 015, 017, 020, 021, 023, 024, 031 | 16 |
-| FE | 008, 026, 027, 029, 030, 032, 034 | 7 |
-| FE+BE | 011, 013, 016, 019, 025 | 5 |
-| Data | 002, 012, 022, 028, 033 | 5 |
-| Config | 018, 035 | 2 |
+| Functional | 001, 002, 003, 004, 006, 007, 008, 011, 012, 014, 015, 016, 019, 021, 022, 023, 024, 025, 027, 029, 031, 034 | 22 |
+| Security | 005, 013, 017, 018 | 4 |
+| Integration | 010, 020, 035 | 3 |
+| Data | 028, 033 | 2 |
+| Concurrency | 009 | 1 |
+| UI | 026 | 1 |
+| Performance | 030 | 1 |
+| Compliance | 032 | 1 |
 | **Total** | | **35** |
 
 Migration tag (separate flag, 11 bugs): 003, 026, 027, 028, 029, 030, 031, 032, 033, 034, 035.
 
 ```mermaid
 pie title Bugs by category
-    "BE" : 16
-    "FE" : 7
-    "FE+BE" : 5
-    "Data" : 5
-    "Config" : 2
+    "Functional" : 22
+    "Security" : 4
+    "Integration" : 3
+    "Data" : 2
+    "Concurrency" : 1
+    "UI" : 1
+    "Performance" : 1
+    "Compliance" : 1
 ```
 
 #### Bug Count by Priority & Status
@@ -207,4 +226,11 @@ pie title Bugs by category
 | P2 | 1 | 3 | 4 | 0 | 3 | 1 | 0 | 12 |
 | To be prioritised | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 2 |
 | **Total** | 9 | 6 | 6 | 5 | 4 | 3 | 2 | **35** |
+
+```mermaid
+pie title Bugs by priority
+    "P1" : 21
+    "P2" : 12
+    "To be prioritised" : 2
+```
 

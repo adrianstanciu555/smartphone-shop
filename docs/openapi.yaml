@@ -222,7 +222,7 @@ paths:
       requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/ReturnRequest'}}}}
       responses: {'201': {description: Created, content: {application/json: {schema: {$ref: '#/components/schemas/Return'}}}}, '422': {description: Outside 30-day window}}
 
-  # ---------- admin (roles: catalog_manager, support_agent) ----------
+  # ---------- admin (roles: catalog_manager, support_agent, admin) ----------
   /admin/products:
     get: {tags: [admin], summary: List products, responses: {'200': {description: OK, content: {application/json: {schema: {$ref: '#/components/schemas/ProductPage'}}}}}}
     post:
@@ -310,7 +310,7 @@ components:
         code: {type: string}
         message: {type: string}
         details: {type: array, items: {type: object, properties: {field: {type: string}, issue: {type: string}}}}
-    Role: {type: string, enum: [customer, catalog_manager, support_agent]}
+    Role: {type: string, enum: [customer, catalog_manager, support_agent, admin]}
     Category: {type: string, enum: [smartphone, case, charger, cable, headphones, screen_protector]}
     OrderStatus: {type: string, enum: [pending, paid, processing, shipped, delivered, cancelled, return_requested, returned, refunded, payment_failed]}
     Money:

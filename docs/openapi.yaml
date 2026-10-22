@@ -72,7 +72,7 @@ paths:
     post:
       tags: [auth]
       security: []
-      requestBody: {required: true, content: {application/json: {schema: {type: object, required: [token, newPassword], properties: {token: {type: string}, newPassword: {type: string, minLength: 8}}}}}}
+      requestBody: {required: true, content: {application/json: {schema: {type: object, required: [token, newPassword], properties: {token: {type: string}, newPassword: {type: string, minLength: 8, maxLength: 128, pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).+$', description: 'At least 8 characters, with one uppercase letter, one lowercase letter, one digit and one special character.'}}}}}}
       responses: {'204': {description: Password changed}, '410': {description: Token expired}}
 
   # ---------- users ----------
@@ -322,7 +322,12 @@ components:
       required: [email, password, name]
       properties:
         email: {type: string, format: email, maxLength: 254}
-        password: {type: string, minLength: 8, maxLength: 128}
+        password:
+          type: string
+          minLength: 8
+          maxLength: 128
+          pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).+$'
+          description: At least 8 characters, with one uppercase letter, one lowercase letter, one digit and one special character.
         name: {type: string, maxLength: 100}
     LoginRequest:
       type: object

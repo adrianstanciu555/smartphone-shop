@@ -17,8 +17,12 @@ Rules come from `database/migrations/schema.sql` and `docs/openapi.yaml`. The ex
 
 ## Price calculation notes
 
-- Prices are tax-inclusive. The seed orders in `customer_data_original.sql` use `tax_total = 0`, `shipping_total = 0` and `total = subtotal`. For example, Elena's order is 799.99 + 12.99 + 24.99 = 837.97, which matches the CSV.
-- The schema stores `tax_rate` per product (default 0) but doesn't say how `tax_total` is derived from it. Whether `tax_total` is shown as part of the price, and the rounding rule for per-line or per-order totals, are not defined. The Checklist raises the same question. Confirm this with the team before writing expected totals for products with a non-zero `tax_rate`.
+- Prices are tax-inclusive, so `total = subtotal` and tax is extracted from the price, not added on top. `tax_rate` is a percentage from 0 to 5 (`CHECK (tax_rate BETWEEN 0 AND 5)` on `products` and `order_items`).
+- Formula: `tax_total = sum(round(line_total × tax_rate / (100 + tax_rate), 2))`, rounded per line (half away from zero in PostgreSQL). `shipping_total` is 0 in the seed data.
+- Worked example at `tax_rate = 5`, Elena's order (837.97): 799.99 gives 38.09, 12.99 gives 0.62, 24.99 gives 1.19, so `tax_total` = 39.90 and `total` = 837.97. At `tax_rate = 0` (the default) `tax_total` is 0.00.
+- Tax test values: `tax_rate` 0 and 5 are valid boundaries; `5.01`, `-0.01` and `6` are rejected. A tricky case is `19.99 × 3` at 5%, where per-line and per-order rounding can differ by a cent.
+- The per-line rounding rule is my assumption, since the repo doesn't define one. Confirm it with the team.
+- Seed data: every product in `products.sql` has `tax_rate = 5.00`. Each order's `tax_total` is in `customer_data_original.sql` and in the `Purchase History` column of `customer_data_original.csv` and `customer_data_anonymized.csv` (for example `#100001` / `#482517`: 837.97 EUR includes 39.90 EUR tax).
 
 ## Notes
 

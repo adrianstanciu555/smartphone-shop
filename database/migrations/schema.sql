@@ -126,7 +126,7 @@ CREATE TABLE products (
   category       product_category NOT NULL,                   -- GET /categories
   price          numeric(10,2) NOT NULL CHECK (price >= 0),   -- includes taxes
   currency       char(3) NOT NULL DEFAULT 'EUR',
-  tax_rate       numeric(5,2) NOT NULL DEFAULT 0 CHECK (tax_rate >= 0),
+  tax_rate       numeric(5,2) NOT NULL DEFAULT 0 CHECK (tax_rate BETWEEN 0 AND 5),  -- percent, max 5%; already included in price
   rating         numeric(2,1) NOT NULL DEFAULT 0 CHECK (rating BETWEEN 0 AND 5),
   popularity     integer NOT NULL DEFAULT 0 CHECK (popularity >= 0),  -- sort=popularity
   specs          jsonb NOT NULL DEFAULT '{}'::jsonb,          -- string -> string map
@@ -252,7 +252,7 @@ CREATE TABLE orders (
   delivery_method    delivery_method NOT NULL,
   shipping_address   jsonb NOT NULL,                    -- snapshot of address
   subtotal           numeric(10,2) NOT NULL CHECK (subtotal >= 0),
-  tax_total          numeric(10,2) NOT NULL DEFAULT 0 CHECK (tax_total >= 0),
+  tax_total          numeric(10,2) NOT NULL DEFAULT 0 CHECK (tax_total >= 0),   -- included in total: sum(round(line_total * tax_rate / (100 + tax_rate), 2))
   discount_total     numeric(10,2) NOT NULL DEFAULT 0 CHECK (discount_total >= 0),
   shipping_total     numeric(10,2) NOT NULL DEFAULT 0 CHECK (shipping_total >= 0),
   total              numeric(10,2) NOT NULL CHECK (total >= 0),
@@ -275,7 +275,7 @@ CREATE TABLE order_items (
   product_name  text NOT NULL,                          -- snapshot
   sku           text NOT NULL,
   unit_price    numeric(10,2) NOT NULL CHECK (unit_price >= 0),
-  tax_rate      numeric(5,2) NOT NULL DEFAULT 0,
+  tax_rate      numeric(5,2) NOT NULL DEFAULT 0 CHECK (tax_rate BETWEEN 0 AND 5),
   quantity      integer NOT NULL CHECK (quantity > 0),
   line_total    numeric(10,2) NOT NULL CHECK (line_total >= 0),
   UNIQUE (order_id, product_id)

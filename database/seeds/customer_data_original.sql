@@ -98,7 +98,7 @@ INSERT INTO orders (order_number, user_id, idempotency_key, status, delivery_met
 SELECT d.order_number, u.id, gen_random_uuid(), d.status, 'standard',
        jsonb_build_object('recipient', a.recipient, 'phone', a.phone, 'line1', a.line1, 'city', a.city,
                           'postalCode', a.postal_code, 'country', a.country),
-       t.subtotal, 0, 0, t.subtotal,
+       t.subtotal, t.tax_total, 0, t.subtotal,
        now() - d.days_ago * interval '1 day',
        CASE WHEN d.status IN ('shipped', 'delivered', 'returned')
             THEN now() - (d.days_ago - 1) * interval '1 day' END,
@@ -110,7 +110,9 @@ FROM order_defs_seed d
 JOIN users u     ON u.email = d.email
 JOIN addresses a ON a.user_id = u.id AND a.is_default
 JOIN LATERAL (
-  SELECT sum(p.price * l.quantity) AS subtotal
+  SELECT sum(p.price * l.quantity) AS subtotal,
+         -- prices include tax, so tax is extracted: line_total * rate / (100 + rate), rounded per line
+         sum(round(p.price * l.quantity * p.tax_rate / (100 + p.tax_rate), 2)) AS tax_total
   FROM order_lines_seed l
   JOIN products p ON p.name = l.product_name
   WHERE l.order_number = d.order_number

@@ -27,9 +27,9 @@ WITH src AS (
            ORDER BY length(b.name) DESC LIMIT 1) AS brand_id
   FROM products_seed s
 ), ins AS (
-  INSERT INTO products (sku, name, brand_id, category, price, rating)
+  INSERT INTO products (sku, name, brand_id, category, price, tax_rate, rating)
   SELECT upper(regexp_replace(name, '[^A-Za-z0-9]+', '-', 'g')),
-         name, brand_id, category::product_category, price, rating
+         name, brand_id, category::product_category, price, 5.00, rating   -- 5% tax included in price
   FROM src
   RETURNING id, name
 )

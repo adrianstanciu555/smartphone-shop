@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Anna Petrova",
+    "email": "anna.petrova@gmail.com",
+    "birthdate": "1992-07-14",
+    "phone": "+44 7624 123456",
+    "country": "GB",
+    "accountStatus": "active"
+  },
+  {
+    "name": "Mihai Ionescu",
+    "email": "mihai.ionescu@yahoo.com",
+    "birthdate": "1988-03-02",
+    "phone": "+40 721 345 678",
+    "country": "RO",
+    "accountStatus": "active"
+  },
+  {
+    "name": "Lena Schneider",
+    "email": "lena.schneider@web.de",
+    "birthdate": "1999-11-23",
+    "phone": "+49 151 23456789",
+    "country": "DE",
+    "accountStatus": "unverified"
+  },
+  {
+    "name": "Carlos Fernández",
+    "email": "carlos.fernandez@outlook.com",
+    "birthdate": "1975-05-30",
+    "phone": "+34 612 345 678",
+    "country": "ES",
+    "accountStatus": "locked"
+  },
+  {
+    "name": "Sophie Dubois",
+    "email": "sophie.dubois@orange.fr",
+    "birthdate": "2001-01-09",
+    "phone": "+33 6 12 34 56 78",
+    "country": "FR",
+    "accountStatus": "suspended"
+  }
+]

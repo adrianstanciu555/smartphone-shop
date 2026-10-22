@@ -1,0 +1,147 @@
+{
+  "note": "Limits from openapi.yaml/schema.sql: email maxLength 254 (users.email); local part <=64, domain labels <=63",
+  "valid": [
+    {
+      "id": "V01",
+      "case": "simple",
+      "email": "john.doe@example.com",
+      "length": 20,
+      "valid": true
+    },
+    {
+      "id": "V02",
+      "case": "plus tag",
+      "email": "jane+shop@example.co.uk",
+      "length": 23,
+      "valid": true
+    },
+    {
+      "id": "V03",
+      "case": "subdomain",
+      "email": "user@mail.shop.example.com",
+      "length": 26,
+      "valid": true
+    },
+    {
+      "id": "V04",
+      "case": "digits/underscore/hyphen",
+      "email": "user_name-123@my-domain.org",
+      "length": 27,
+      "valid": true
+    },
+    {
+      "id": "V05",
+      "case": "long modern TLD",
+      "email": "buyer@example.photography",
+      "length": 25,
+      "valid": true
+    },
+    {
+      "id": "V06",
+      "case": "new short TLD",
+      "email": "buyer@store.shop",
+      "length": 16,
+      "valid": true
+    },
+    {
+      "id": "V07",
+      "case": "IDN punycode TLD",
+      "email": "buyer@example.xn--p1ai",
+      "length": 22,
+      "valid": true
+    },
+    {
+      "id": "V08",
+      "case": "1-char local",
+      "email": "a@b.io",
+      "length": 6,
+      "valid": true
+    },
+    {
+      "id": "V09",
+      "case": "max local 64",
+      "email": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@example.com",
+      "length": 76,
+      "valid": true
+    },
+    {
+      "id": "V10",
+      "case": "max total length 254",
+      "email": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.ddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.com",
+      "length": 254,
+      "valid": true
+    }
+  ],
+  "invalid": [
+    {
+      "id": "I01",
+      "case": "missing @",
+      "email": "john.doe.example.com",
+      "length": 20,
+      "valid": false
+    },
+    {
+      "id": "I02",
+      "case": "missing local part",
+      "email": "@example.com",
+      "length": 12,
+      "valid": false
+    },
+    {
+      "id": "I03",
+      "case": "missing domain",
+      "email": "john@",
+      "length": 5,
+      "valid": false
+    },
+    {
+      "id": "I04",
+      "case": "double @",
+      "email": "john@@example.com",
+      "length": 17,
+      "valid": false
+    },
+    {
+      "id": "I05",
+      "case": "space in address",
+      "email": "john doe@example.com",
+      "length": 20,
+      "valid": false
+    },
+    {
+      "id": "I06",
+      "case": "consecutive dots",
+      "email": "john..doe@example.com",
+      "length": 21,
+      "valid": false
+    },
+    {
+      "id": "I07",
+      "case": "leading dot in local",
+      "email": ".john@example.com",
+      "length": 17,
+      "valid": false
+    },
+    {
+      "id": "I08",
+      "case": "domain starts with hyphen",
+      "email": "john@-example.com",
+      "length": 17,
+      "valid": false
+    },
+    {
+      "id": "I09",
+      "case": "numeric/1-char TLD",
+      "email": "john@example.c",
+      "length": 14,
+      "valid": false
+    },
+    {
+      "id": "I10",
+      "case": "exceeds 254 total length",
+      "email": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.com",
+      "length": 255,
+      "valid": false
+    }
+  ]
+}

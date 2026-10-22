@@ -98,7 +98,9 @@ INSERT INTO orders (order_number, user_id, idempotency_key, status, delivery_met
 SELECT d.order_number, u.id, gen_random_uuid(), d.status, 'standard',
        jsonb_build_object('recipient', a.recipient, 'phone', a.phone, 'line1', a.line1, 'city', a.city,
                           'postalCode', a.postal_code, 'country', a.country),
-       t.subtotal, t.tax_total, 0, t.subtotal,
+       t.subtotal, t.tax_total,
+       CASE WHEN t.subtotal >= 50 THEN 0 ELSE 4.99 END,   -- standard: free from 50.00, otherwise 4.99
+       t.subtotal + CASE WHEN t.subtotal >= 50 THEN 0 ELSE 4.99 END,
        now() - d.days_ago * interval '1 day',
        CASE WHEN d.status IN ('shipped', 'delivered', 'returned')
             THEN now() - (d.days_ago - 1) * interval '1 day' END,

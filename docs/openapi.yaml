@@ -431,7 +431,7 @@ components:
     CheckoutRequest:
       type: object
       required: [addressId, deliveryMethod]
-      properties: {addressId: {type: string, format: uuid}, deliveryMethod: {type: string, enum: [standard, express]}}
+      properties: {addressId: {type: string, format: uuid}, deliveryMethod: {type: string, enum: [standard, express], description: 'standard: free when the items subtotal (before coupons) is 50.00 EUR or more, otherwise 4.99 EUR. express: 9.99 EUR. Shipping is not taxed.'}}
     OrderSummary:
       type: object
       properties: {subtotal: {$ref: '#/components/schemas/Money'}, delivery: {$ref: '#/components/schemas/Money'}, total: {$ref: '#/components/schemas/Money'}}

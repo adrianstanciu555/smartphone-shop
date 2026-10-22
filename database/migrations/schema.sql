@@ -254,7 +254,7 @@ CREATE TABLE orders (
   subtotal           numeric(10,2) NOT NULL CHECK (subtotal >= 0),
   tax_total          numeric(10,2) NOT NULL DEFAULT 0 CHECK (tax_total >= 0),   -- included in total: sum(round(line_total * tax_rate / (100 + tax_rate), 2))
   discount_total     numeric(10,2) NOT NULL DEFAULT 0 CHECK (discount_total >= 0),   -- coupons apply after tax: on the tax-inclusive price; tax_total is not reduced
-  shipping_total     numeric(10,2) NOT NULL DEFAULT 0 CHECK (shipping_total >= 0),   -- standard 0.00, express 9.99, no tax on shipping
+  shipping_total     numeric(10,2) NOT NULL DEFAULT 0 CHECK (shipping_total >= 0),   -- standard: 0.00 when subtotal >= 50.00, else 4.99; express: 9.99; no tax on shipping
   total              numeric(10,2) NOT NULL CHECK (total >= 0),                       -- subtotal - discount_total + shipping_total
   currency           char(3) NOT NULL DEFAULT 'EUR',
   paid_at            timestamptz,

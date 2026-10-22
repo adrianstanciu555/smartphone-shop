@@ -18,10 +18,10 @@ Rules come from `database/migrations/schema.sql` and `docs/openapi.yaml`. The ex
 ## Price calculation notes
 
 - Prices are tax-inclusive, so tax is extracted from the price, not added on top. `total = subtotal − discount_total + shipping_total`. `tax_rate` is a percentage from 0 to 5 (`CHECK (tax_rate BETWEEN 0 AND 5)` on `products` and `order_items`).
-- Formula: `tax_total = sum(round(line_total × tax_rate / (100 + tax_rate), 2))`, rounded per line (half away from zero in PostgreSQL). Coupons apply after tax and don't change `tax_total`. Shipping is untaxed: `standard` 0.00 (as in the seed data), `express` 9.99.
+- Formula: `tax_total = sum(round(line_total × tax_rate / (100 + tax_rate), 2))`, rounded per line (half away from zero in PostgreSQL). Coupons apply after tax and don't change `tax_total`. Shipping is untaxed: `standard` is 0.00 when the items subtotal is 50.00 or more and 4.99 otherwise (three seeded orders pay 4.99), `express` is 9.99.
 - Worked example at `tax_rate = 5`, Elena's order (837.97): 799.99 gives 38.09, 12.99 gives 0.62, 24.99 gives 1.19, so `tax_total` = 39.90 and `total` = 837.97. At `tax_rate = 0` (the default) `tax_total` is 0.00.
 - Tax test values: `tax_rate` 0 and 5 are valid boundaries; `5.01`, `-0.01` and `6` are rejected. A tricky case is `19.99 × 3` at 5%, where per-line and per-order rounding can differ by a cent.
-- The per-line rounding rule is my assumption, since the repo doesn't define one. Confirm it with the team.
+- The per-line rounding rule was confirmed by the team (the repo doesn't define one).
 - Seed data: every product in `products.sql` has `tax_rate = 5.00`. Each order's `tax_total` is in `customer_data_original.sql` and in the `Purchase History` column of `customer_data_original.csv` and `customer_data_anonymized.csv` (for example `#100001` / `#482517`: 837.97 EUR includes 39.90 EUR tax).
 
 ## Notes

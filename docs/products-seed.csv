@@ -1,101 +1,101 @@
 name,category,price,rating,availability
-Apple iPhone 15 512GB,smartphone,528.99,5.0,true
-Vivo X100 512GB,smartphone,704.99,0.0,true
-Vivo X100 128GB,smartphone,871.99,4.4,false
-HONOR Magic6 256GB,smartphone,905.99,4.6,false
-Google Pixel 8 256GB,smartphone,531.99,3.3,true
-Apple iPhone 15 256GB,smartphone,314.99,4.7,true
-Samsung Galaxy S24 512GB,smartphone,348.99,4.8,false
-Xiaomi Redmi Note 13 256GB,smartphone,891.99,4.4,false
-Motorola Edge 40 128GB,smartphone,1224.99,4.7,true
-Sony Xperia 1 V 128GB,smartphone,642.99,3.3,true
-Apple iPhone 15 1024GB,smartphone,403.99,4.4,true
-HONOR Magic6 512GB,smartphone,1024.99,3.3,true
-Samsung Galaxy S24 128GB,smartphone,1164.99,3.7,false
-OnePlus Nord 3 128GB,smartphone,985.99,3.7,true
-Sony Xperia 1 V 256GB,smartphone,366.99,4.4,true
-OnePlus Nord 3 512GB,smartphone,677.99,3.3,true
-Vivo X100 256GB,smartphone,1105.99,4.7,true
-Google Pixel 8 512GB,smartphone,274.99,3.6,true
-Vivo X100 1024GB,smartphone,1231.99,2.8,true
-OPPO Find X7 256GB,smartphone,720.99,3.8,true
-Xiaomi Redmi Note 13 128GB,smartphone,807.99,3.0,true
-Google Pixel 8 128GB,smartphone,845.99,4.5,true
-Samsung Galaxy S24 256GB,smartphone,784.99,3.0,true
-Xiaomi Redmi Note 13 512GB,smartphone,487.99,4.0,false
-Sony Xperia 1 V 512GB,smartphone,1117.99,3.1,true
-PanzerGlass Rugged Case for Pixel 8,case,26.99,4.1,true
-Ringke Clear Case for Redmi Note 13,case,40.99,3.8,true
-Spigen Clear Case for Galaxy S24,case,28.99,3.3,true
-Spigen Slim Case for iPhone 15,case,9.99,2.9,true
-McDodo Wallet Case for iPhone 15,case,26.99,4.4,true
-PanzerGlass Wallet Case for iPhone 15,case,36.99,4.6,true
-Spigen Wallet Case for Pixel 8,case,22.99,3.8,true
-McDodo Slim Case for Galaxy S24,case,21.99,3.5,true
-Nillkin Rugged Case for iPhone 15,case,26.99,3.1,true
-Ringke Rugged Case for Galaxy S24,case,23.99,4.7,true
-Spigen Slim Case for Galaxy S24,case,41.99,4.7,true
-Ringke Wallet Case for iPhone 15,case,39.99,4.8,true
-Urban Armor Gear Wallet Case for Pixel 8,case,22.99,4.9,true
-Nillkin Clear Case for iPhone 15,case,43.99,4.1,true
-McDodo Clear Case for Galaxy S24,case,8.99,3.8,true
-PanzerGlass Rugged Case for Galaxy S24,case,43.99,3.0,true
-PanzerGlass Slim Case for iPhone 15,case,21.99,4.9,true
-PanzerGlass Slim Case for Galaxy S24,case,22.99,4.1,true
-Techsuit Rugged Case for Pixel 8,case,15.99,3.7,true
-Techsuit Wallet Case for Pixel 8,case,41.99,4.9,false
-Baseus 20W USB-C Charger Black,charger,47.99,3.9,false
-UGREEN 20W USB-C Charger Black,charger,36.99,3.1,true
-Spigen 15W Wireless Charger Blue,charger,77.99,4.6,true
-Anker 65W GaN Charger White,charger,19.99,3.0,true
-UGREEN 15W Wireless Charger Blue,charger,25.99,3.6,true
-UGREEN 3-in-1 Charging Stand White,charger,72.99,4.7,false
-HOCO 15W Wireless Charger Black,charger,11.99,4.5,true
-UGREEN 65W GaN Charger Blue,charger,41.99,4.4,true
-Anker 20W USB-C Charger Blue,charger,72.99,4.0,true
-Baseus 65W GaN Charger White,charger,20.99,3.5,true
-Anker 15W Wireless Charger Black,charger,57.99,4.3,true
-Baseus 3-in-1 Charging Stand Blue,charger,61.99,4.8,true
-Belkin 65W GaN Charger White,charger,13.99,4.4,true
-HOCO 65W GaN Charger White,charger,22.99,4.3,true
-Anker 3-in-1 Charging Stand Black,charger,24.99,4.8,true
-Anker USB-C to Lightning Cable 2m Black,cable,20.99,3.7,true
-Baseus Braided USB-C Cable 1.5m White,cable,19.99,3.7,true
+Apple iPhone 15 512GB,smartphone,1329.99,5.0,true
+Vivo X100 512GB,smartphone,999.99,0.0,true
+Vivo X100 128GB,smartphone,849.99,4.4,false
+HONOR Magic6 256GB,smartphone,999.99,4.6,false
+Google Pixel 8 256GB,smartphone,859.99,3.3,true
+Apple iPhone 15 256GB,smartphone,1099.99,4.7,true
+Samsung Galaxy S24 512GB,smartphone,1079.99,4.8,false
+Xiaomi Redmi Note 13 256GB,smartphone,299.99,4.4,false
+Motorola Edge 40 128GB,smartphone,549.99,4.7,true
+Sony Xperia 1 V 128GB,smartphone,1299.99,3.3,true
+Apple iPhone 15 1024GB,smartphone,1559.99,4.4,true
+HONOR Magic6 512GB,smartphone,1299.99,3.3,true
+Samsung Galaxy S24 128GB,smartphone,899.99,3.7,false
+OnePlus Nord 3 128GB,smartphone,449.99,3.7,true
+Sony Xperia 1 V 256GB,smartphone,1399.99,4.4,true
+OnePlus Nord 3 512GB,smartphone,649.99,3.3,true
+Vivo X100 256GB,smartphone,899.99,4.7,true
+Google Pixel 8 512GB,smartphone,959.99,3.6,true
+Vivo X100 1024GB,smartphone,1199.99,2.8,true
+OPPO Find X7 256GB,smartphone,899.99,3.8,true
+Xiaomi Redmi Note 13 128GB,smartphone,249.99,3.0,true
+Google Pixel 8 128GB,smartphone,799.99,4.5,true
+Samsung Galaxy S24 256GB,smartphone,959.99,3.0,true
+Xiaomi Redmi Note 13 512GB,smartphone,349.99,4.0,false
+Sony Xperia 1 V 512GB,smartphone,1499.99,3.1,true
+PanzerGlass Rugged Case for Pixel 8,case,39.99,4.1,true
+Ringke Clear Case for Redmi Note 13,case,14.99,3.8,true
+Spigen Clear Case for Galaxy S24,case,19.99,3.3,true
+Spigen Slim Case for iPhone 15,case,19.99,2.9,true
+McDodo Wallet Case for iPhone 15,case,16.99,4.4,true
+PanzerGlass Wallet Case for iPhone 15,case,44.99,4.6,true
+Spigen Wallet Case for Pixel 8,case,24.99,3.8,true
+McDodo Slim Case for Galaxy S24,case,12.99,3.5,true
+Nillkin Rugged Case for iPhone 15,case,17.99,3.1,true
+Ringke Rugged Case for Galaxy S24,case,19.99,4.7,true
+Spigen Slim Case for Galaxy S24,case,19.99,4.7,true
+Ringke Wallet Case for iPhone 15,case,24.99,4.8,true
+Urban Armor Gear Wallet Case for Pixel 8,case,44.99,4.9,true
+Nillkin Clear Case for iPhone 15,case,14.99,4.1,true
+McDodo Clear Case for Galaxy S24,case,12.99,3.8,true
+PanzerGlass Rugged Case for Galaxy S24,case,39.99,3.0,true
+PanzerGlass Slim Case for iPhone 15,case,34.99,4.9,true
+PanzerGlass Slim Case for Galaxy S24,case,34.99,4.1,true
+Techsuit Rugged Case for Pixel 8,case,12.99,3.7,true
+Techsuit Wallet Case for Pixel 8,case,14.99,4.9,false
+Baseus 20W USB-C Charger Black,charger,14.99,3.9,false
+UGREEN 20W USB-C Charger Black,charger,15.99,3.1,true
+Spigen 15W Wireless Charger Blue,charger,29.99,4.6,true
+Anker 65W GaN Charger White,charger,39.99,3.0,true
+UGREEN 15W Wireless Charger Blue,charger,24.99,3.6,true
+UGREEN 3-in-1 Charging Stand White,charger,59.99,4.7,false
+HOCO 15W Wireless Charger Black,charger,14.99,4.5,true
+UGREEN 65W GaN Charger Blue,charger,34.99,4.4,true
+Anker 20W USB-C Charger Blue,charger,19.99,4.0,true
+Baseus 65W GaN Charger White,charger,29.99,3.5,true
+Anker 15W Wireless Charger Black,charger,24.99,4.3,true
+Baseus 3-in-1 Charging Stand Blue,charger,49.99,4.8,true
+Belkin 65W GaN Charger White,charger,49.99,4.4,true
+HOCO 65W GaN Charger White,charger,24.99,4.3,true
+Anker 3-in-1 Charging Stand Black,charger,69.99,4.8,true
+Anker USB-C to Lightning Cable 2m Black,cable,19.99,3.7,true
+Baseus Braided USB-C Cable 1.5m White,cable,9.99,3.7,true
 McDodo Braided USB-C Cable 1.5m Black,cable,7.99,4.9,true
-UGREEN USB-C to USB-C Cable 1m Black,cable,18.99,3.6,true
-HOCO USB-C to USB-C Cable 1m White,cable,26.99,3.2,false
-HOCO USB-C to USB-C Cable 1m Blue,cable,26.99,4.0,true
-Spigen USB-C to Lightning Cable 2m White,cable,14.99,4.9,true
-McDodo Braided USB-C Cable 1.5m Blue,cable,24.99,4.4,true
-UGREEN Magnetic Cable 1m White,cable,14.99,3.5,false
-HOCO Magnetic Cable 1m Blue,cable,22.99,3.2,true
-UGREEN USB-C to Lightning Cable 2m White,cable,23.99,4.1,true
-Anker Magnetic Cable 1m Blue,cable,8.99,3.0,true
-Spigen Braided USB-C Cable 1.5m Black,cable,24.99,4.5,true
-Baseus USB-C to USB-C Cable 1m Black,cable,28.99,4.1,true
-McDodo USB-C to Lightning Cable 2m Blue,cable,21.99,3.9,true
-Xiaomi Wireless Earbuds Black,headphones,275.99,3.3,true
-Xiaomi ANC Headphones Black,headphones,202.99,4.8,false
-Anker ANC Headphones Blue,headphones,193.99,4.0,true
-Baseus ANC Headphones Blue,headphones,287.99,4.8,true
-Apple ANC Headphones Black,headphones,263.99,3.8,true
-Anker Sport Earbuds Blue,headphones,178.99,3.3,true
-Xiaomi Sport Earbuds Black,headphones,108.99,3.5,true
-Anker Bluetooth Headphones Black,headphones,144.99,3.1,true
-Samsung ANC Headphones White,headphones,197.99,3.7,true
-Samsung ANC Headphones Blue,headphones,330.99,2.8,true
-Apple ANC Headphones White,headphones,20.99,3.6,true
-Xiaomi Bluetooth Headphones White,headphones,90.99,3.8,false
-Philips ANC Headphones Blue,headphones,72.99,3.8,false
-Apple Wireless Earbuds White,headphones,213.99,4.3,false
-Samsung Bluetooth Headphones White,headphones,78.99,3.4,true
-Belkin Anti-Glare Film for Pixel 8,screen_protector,26.99,3.6,true
-Belkin Anti-Glare Film for Galaxy S24,screen_protector,18.99,4.4,false
-Nillkin Privacy Glass for Galaxy S24,screen_protector,27.99,4.2,true
-Spigen Privacy Glass for Galaxy S24,screen_protector,22.99,3.3,true
-PanzerGlass Privacy Glass for Redmi Note 13,screen_protector,25.99,4.5,true
-Ringke Tempered Glass for iPhone 15,screen_protector,32.99,3.0,false
-Nillkin Full Cover Glass for Redmi Note 13,screen_protector,31.99,3.2,true
-Techsuit Privacy Glass for Galaxy S24,screen_protector,25.99,3.5,true
-PanzerGlass Tempered Glass for Pixel 8,screen_protector,20.99,4.3,false
-Techsuit Anti-Glare Film for Galaxy S24,screen_protector,29.99,4.6,false
+UGREEN USB-C to USB-C Cable 1m Black,cable,9.99,3.6,true
+HOCO USB-C to USB-C Cable 1m White,cable,6.99,3.2,false
+HOCO USB-C to USB-C Cable 1m Blue,cable,6.99,4.0,true
+Spigen USB-C to Lightning Cable 2m White,cable,19.99,4.9,true
+McDodo Braided USB-C Cable 1.5m Blue,cable,7.99,4.4,true
+UGREEN Magnetic Cable 1m White,cable,12.99,3.5,false
+HOCO Magnetic Cable 1m Blue,cable,8.99,3.2,true
+UGREEN USB-C to Lightning Cable 2m White,cable,17.99,4.1,true
+Anker Magnetic Cable 1m Blue,cable,14.99,3.0,true
+Spigen Braided USB-C Cable 1.5m Black,cable,14.99,4.5,true
+Baseus USB-C to USB-C Cable 1m Black,cable,8.99,4.1,true
+McDodo USB-C to Lightning Cable 2m Blue,cable,12.99,3.9,true
+Xiaomi Wireless Earbuds Black,headphones,49.99,3.3,true
+Xiaomi ANC Headphones Black,headphones,69.99,4.8,false
+Anker ANC Headphones Blue,headphones,79.99,4.0,true
+Baseus ANC Headphones Blue,headphones,59.99,4.8,true
+Apple ANC Headphones Black,headphones,579.00,3.8,true
+Anker Sport Earbuds Blue,headphones,89.99,3.3,true
+Xiaomi Sport Earbuds Black,headphones,39.99,3.5,true
+Anker Bluetooth Headphones Black,headphones,49.99,3.1,true
+Samsung ANC Headphones White,headphones,199.99,3.7,true
+Samsung ANC Headphones Blue,headphones,199.99,2.8,true
+Apple ANC Headphones White,headphones,579.00,3.6,true
+Xiaomi Bluetooth Headphones White,headphones,29.99,3.8,false
+Philips ANC Headphones Blue,headphones,99.99,3.8,false
+Apple Wireless Earbuds White,headphones,149.00,4.3,false
+Samsung Bluetooth Headphones White,headphones,99.99,3.4,true
+Belkin Anti-Glare Film for Pixel 8,screen_protector,24.99,3.6,true
+Belkin Anti-Glare Film for Galaxy S24,screen_protector,24.99,4.4,false
+Nillkin Privacy Glass for Galaxy S24,screen_protector,14.99,4.2,true
+Spigen Privacy Glass for Galaxy S24,screen_protector,24.99,3.3,true
+PanzerGlass Privacy Glass for Redmi Note 13,screen_protector,29.99,4.5,true
+Ringke Tempered Glass for iPhone 15,screen_protector,12.99,3.0,false
+Nillkin Full Cover Glass for Redmi Note 13,screen_protector,11.99,3.2,true
+Techsuit Privacy Glass for Galaxy S24,screen_protector,9.99,3.5,true
+PanzerGlass Tempered Glass for Pixel 8,screen_protector,34.99,4.3,false
+Techsuit Anti-Glare Film for Galaxy S24,screen_protector,7.99,4.6,false

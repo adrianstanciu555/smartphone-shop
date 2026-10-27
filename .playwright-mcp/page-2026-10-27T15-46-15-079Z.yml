@@ -1,0 +1,64 @@
+- generic [active] [ref=e1]:
+  - text:             
+  - navigation [ref=e2]:
+    - button "Toggle navigation" [ref=e3]
+    - link "PRODUCT STORE" [ref=e5] [cursor=pointer]:
+      - /url: index.html
+    - list [ref=e8]:
+      - listitem [ref=e9]:
+        - link "Home (current)" [ref=e10] [cursor=pointer]:
+          - /url: index.html
+          - text: Home
+          - generic [ref=e11]: (current)
+      - listitem [ref=e12]:
+        - link "Contact" [ref=e13] [cursor=pointer]:
+          - /url: "#"
+      - listitem [ref=e14]:
+        - link "About us" [ref=e15] [cursor=pointer]:
+          - /url: "#"
+      - listitem [ref=e16]:
+        - link "Cart" [ref=e17] [cursor=pointer]:
+          - /url: cart.html
+      - listitem [ref=e18]:
+        - link "Log in" [ref=e19] [cursor=pointer]:
+          - /url: "#"
+      - listitem
+      - listitem
+      - listitem [ref=e20]:
+        - link "Sign up" [ref=e21] [cursor=pointer]:
+          - /url: "#"
+    - generic [ref=e23]:
+      - list [ref=e24]:
+        - listitem [ref=e25] [cursor=pointer]
+        - listitem [ref=e26] [cursor=pointer]
+        - listitem [ref=e27] [cursor=pointer]
+      - img "First slide" [ref=e30]
+      - button "Previous" [ref=e31] [cursor=pointer]
+      - button "Next" [ref=e34] [cursor=pointer]
+  - generic [ref=e38]:
+    - generic [ref=e40]:
+      - link "CATEGORIES" [ref=e41] [cursor=pointer]:
+        - /url: ""
+      - link "Phones" [ref=e42] [cursor=pointer]:
+        - /url: "#"
+      - link "Laptops" [ref=e43] [cursor=pointer]:
+        - /url: "#"
+      - link "Monitors" [ref=e44] [cursor=pointer]:
+        - /url: "#"
+    - list [ref=e47]:
+      - listitem [ref=e48]:
+        - button "Previous" [ref=e49]
+      - listitem [ref=e50]:
+        - button "Next" [ref=e51] [cursor=pointer]
+  - generic [ref=e53]:
+    - generic [ref=e56]:
+      - heading "About Us" [level=4] [ref=e57]
+      - paragraph [ref=e58]: We believe performance needs to be validated at every stage of the software development cycle and our open source compatible, massively scalable platform makes that a reality.
+    - generic [ref=e61]:
+      - heading "Get in Touch" [level=4] [ref=e62]
+      - paragraph [ref=e63]: "Address: 2390 El Camino Real"
+      - paragraph [ref=e64]: "Phone: +440 123456"
+      - paragraph [ref=e65]: "Email: demo@blazemeter.com"
+    - heading "PRODUCT STORE" [level=4] [ref=e69]
+  - contentinfo [ref=e71]:
+    - paragraph [ref=e72]: Copyright © Product Store

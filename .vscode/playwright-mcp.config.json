@@ -1,0 +1,10 @@
+{
+  "browser": {
+    "browserName": "chromium",
+    "launchOptions": {
+      "channel": "msedge",
+      "headless": false
+    }
+  },
+  "outputDir": "./playwright-output"
+}

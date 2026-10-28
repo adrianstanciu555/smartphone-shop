@@ -1,0 +1,55 @@
+- generic [ref=f17e2]:
+  - navigation [ref=f17e3]:
+    - link "Despre" [ref=f17e142] [cursor=pointer]:
+      - /url: https://about.google/?fg=1&utm_source=google-RO&utm_medium=referral&utm_campaign=hp-header
+    - link "Google Store" [ref=f17e143] [cursor=pointer]:
+      - /url: https://store.google.com/RO?utm_source=hp_header&utm_medium=google_ooo&utm_campaign=GS100042&hl=ro-RO
+    - generic [ref=f17e7]:
+      - generic [ref=f17e8]:
+        - link "Gmail" [ref=f17e144] [cursor=pointer]:
+          - /url: https://mail.google.com/mail/&ogbl
+        - link "Caută imagini" [ref=f17e145] [cursor=pointer]:
+          - /url: https://www.google.com/imghp?hl=ro&ogbl
+          - text: Imagini
+      - button "Aplicații Google" [ref=f17e146] [cursor=pointer]
+      - link "Conectați-vă" [ref=f17e147] [cursor=pointer]:
+        - /url: https://accounts.google.com/ServiceLogin?hl=ro&passive=true&continue=https://www.google.com/&ec=futura_exp_og_so_72776762_e
+  - img "Google" [ref=f17e148]
+  - search [ref=f17e31]:
+    - generic [ref=f17e33]:
+      - generic [ref=f17e35]:
+        - button "Adaugă fișiere și instrumente" [ref=f17e149] [cursor=pointer]
+        - combobox "Caută" [ref=f17e150]
+        - generic [ref=f17e46]:
+          - generic [ref=f17e47]:
+            - button "Instrumente pentru introducere de text" [ref=f17e151] [cursor=pointer]
+            - button "Fă o căutare vocală" [ref=f17e152] [cursor=pointer]
+            - button "Căutare după imagine" [ref=f17e153] [cursor=pointer]
+          - link "Modul AI" [ref=f17e154] [cursor=pointer]
+      - generic [ref=f17e72]:
+        - button "Căutare Google" [ref=f17e155] [cursor=pointer]
+        - button "Simt că am noroc" [ref=f17e156] [cursor=pointer]
+  - generic [ref=f17e77]:
+    - text: "Google oferit în:"
+    - link "magyar" [ref=f17e157] [cursor=pointer]:
+      - /url: https://www.google.com/setprefs?sig=0_gK00Lmy41a5dqblirKGsEOICXeg%3D&hl=hu&source=homepage&sa=X&ved=0ahUKEwjkmOHfqNyXAxXvRPEDHVObJG4Q2ZgBCC0
+    - link "Deutsch" [ref=f17e158] [cursor=pointer]:
+      - /url: https://www.google.com/setprefs?sig=0_gK00Lmy41a5dqblirKGsEOICXeg%3D&hl=de&source=homepage&sa=X&ved=0ahUKEwjkmOHfqNyXAxXvRPEDHVObJG4Q2ZgBCC4
+    - link "English" [ref=f17e159] [cursor=pointer]:
+      - /url: https://www.google.com/setprefs?sig=0_gK00Lmy41a5dqblirKGsEOICXeg%3D&hl=en&source=homepage&sa=X&ved=0ahUKEwjkmOHfqNyXAxXvRPEDHVObJG4Q2ZgBCC8
+  - contentinfo [ref=f17e82]:
+    - generic [ref=f17e83]: România
+    - generic [ref=f17e84]:
+      - generic [ref=f17e85]:
+        - link "Publicitate" [ref=f17e160] [cursor=pointer]:
+          - /url: https://www.google.com/intl/ro_ro/ads/?subid=ww-ww-et-g-awa-a-g_hpafoot1_1!o2&utm_source=google.com&utm_medium=referral&utm_campaign=google_hpafooter&fg=1
+        - link "Companii" [ref=f17e161] [cursor=pointer]:
+          - /url: https://www.google.com/services/?subid=ww-ww-et-g-awa-a-g_hpbfoot1_1!o2&utm_source=google.com&utm_medium=referral&utm_campaign=google_hpbfooter&fg=1
+        - link "Cum funcționează Căutarea" [ref=f17e162] [cursor=pointer]:
+          - /url: https://google.com/search/howsearchworks/?fg=1
+      - generic [ref=f17e89]:
+        - link "Confidențialitate" [ref=f17e163] [cursor=pointer]:
+          - /url: https://policies.google.com/privacy?hl=ro&fg=1
+        - link "Termeni" [ref=f17e164] [cursor=pointer]:
+          - /url: https://policies.google.com/terms?hl=ro&fg=1
+        - button "Setări" [ref=f17e165] [cursor=pointer]

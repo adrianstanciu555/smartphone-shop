@@ -7,6 +7,10 @@
         "--config",
         "${workspaceFolder}/.vscode/playwright-mcp.config.json"
       ]
+    },
+     "figma": {
+      "url": "https://mcp.figma.com/mcp",
+      "type": "http"
     }
   }
 }

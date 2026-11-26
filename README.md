@@ -15,6 +15,7 @@ Online store for buying smartphones and compatible accessories (cases, chargers,
 - [Testing Strategy](#testing-strategy)
 - [Business Rules](#business-rules)
 - [Documentation](#documentation)
+- [Implementation Status](#implementation-status)
 - [Roadmap](#roadmap)
 
 ## Overview
@@ -121,15 +122,56 @@ Planned, not yet created: `backend/` (NestJS API) and `infrastructure/` (Docker,
 - [Project mindmap](docs/mindmap.md): structure and flow
 - [Prompt examples](docs/prompt-examples.md)
 
+## Implementation Status
+
+What the first implementation commits delivered (verified on 2026-11-26 from a clean checkout of `16efccf`):
+
+| Commit | Scope | Contents |
+| --- | --- | --- |
+| `619ee40` | Reference app | Next.js 16 app in `frontend/`: catalog with search and category filter, product page, login (auto-registers new emails), cart (max 10 units per product, stock checks), checkout (address, standard/express delivery, simulated card payment), order confirmation, test-only `POST /api/test/reset`. Fixes the delivery method resetting to Standard after a failed checkout submit; adds product and order page titles. |
+| `557d7c9` | E2E suite and CI | Playwright + TypeScript framework in `tests/e2e/` (page objects, fixtures, PostgreSQL helper, test data) with 41 tests. GitHub Actions workflow `.github/workflows/e2e.yml` with a Postgres 17 service. |
+| `16efccf` | Documentation | Frontend and E2E READMEs, this README, a "Current Implementation" section in `docs/context.md`, a scope note in `docs/openapi.yaml`. |
+
+E2E coverage (41 tests, 4 tagged `@smoke`):
+
+| Spec | Tests | Covers |
+| --- | --- | --- |
+| `auth.spec.ts` | 8 | First login creates the account, returning login, wrong password, case-insensitive email, field validation, return URL, open-redirect protection, logout |
+| `catalog.spec.ts` | 10 | Product list, search, category filter, combined filters, empty state, SQL wildcards, unknown category, product page, out-of-stock, 404 |
+| `cart.spec.ts` | 9 | Login required, add with quantity, merge quantities, 10-unit limit, update totals, browser max validation, remove items, empty-cart checkout redirect |
+| `checkout.spec.ts` | 9 | Paid order with stock deduction, delivery fees, declined card with retry, express delivery kept after errors, required fields, 4 invalid-card cases |
+| `access-control.spec.ts` | 5 | Anonymous redirects (cart, checkout, order), another customer's order returns 404, tampered session cookie |
+
+Verification results:
+
+| Check | Result |
+| --- | --- |
+| `npm ci`, `npm run lint`, `npx next typegen` + `npx tsc --noEmit` (frontend) | Pass |
+| `npm ci`, `npm run typecheck` (tests/e2e) | Pass |
+| `npx playwright test` with `CI=true` (production build, 2 workers) | 41 passed in 1.3 min |
+| Relative links in the README files | All valid |
+| GitHub Actions run | Not run yet (commits not pushed) |
+
+Known limitation: in an early manual test, one add-to-cart with quantity 2 added only 1 unit. It could not be reproduced in more than 10 later attempts or in the automated suite.
+
 ## Roadmap
 
 - [x] Define project context and architecture
-- [x] Local reference app: catalog, login, cart, checkout with simulated payment
-- [x] Playwright E2E suite and CI workflow
+- [x] Local reference app (`619ee40`)
+  - [x] Catalog: listing, search, category filter, product details, availability
+  - [x] Login with signed session cookie; protected cart, checkout and order pages
+  - [x] Cart: add, update, remove, 10-unit limit, stock checks
+  - [x] Checkout: address, standard/express delivery, simulated card payment, order confirmation
+  - [x] Stock deducted on paid orders; declined payments keep stock and cart
+  - [x] Test-only database reset (`POST /api/test/reset`, `npm run db:reset`)
+- [x] Playwright E2E suite: 41 tests, page objects, fixtures, DB assertions (`557d7c9`)
+- [x] CI workflow for lint, typecheck and E2E on GitHub Actions (`557d7c9`)
+- [x] Documentation for the reference app and E2E suite (`16efccf`)
 - [ ] Set up environments (Dev, Staging, Performance)
 - [ ] Implement full accounts (sign-up, email verification, password reset, addresses)
 - [ ] Replace the simulated payment with Stripe
-- [ ] Implement orders, inventory, and shipping
+- [ ] Implement orders, inventory, and shipping (order history, tracking, cancellation, returns, stock reservation)
 - [ ] Build admin back office
+- [ ] Cross-browser E2E (Firefox, WebKit) and Allure reporting
 - [ ] Performance and security testing
 - [ ] Launch

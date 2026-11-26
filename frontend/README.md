@@ -1,0 +1,85 @@
+# Smartphone Shop: Frontend (local reference app)
+
+A small Next.js app implementing the customer journey from [docs/context.md](../docs/context.md): catalog, login, cart, checkout and order confirmation. It is the system under test for the Playwright suite in [tests/e2e](../tests/e2e/README.md).
+
+It talks to PostgreSQL directly from server components and server actions. There is no separate backend yet, so the REST contract in [docs/openapi.yaml](../docs/openapi.yaml) is not implemented here.
+
+## Stack
+
+- Next.js 16 (App Router, Turbopack), React 19, TypeScript, Tailwind CSS 4
+- PostgreSQL 17 via `pg` (parameterized SQL), schema from [database/migrations/schema.sql](../database/migrations/schema.sql)
+- `@node-rs/argon2` password hashing, `jose` HS256 session cookie (8 hours), `zod` validation
+
+## Setup
+
+1. Install PostgreSQL 17 and create a database and an owner role, for example `smartphone_shop` owned by `shop_app`. The reset drops and recreates the `public` schema and creates the `citext` and `pg_trgm` extensions, so the role must be allowed to do that.
+2. Copy `.env.example` to `.env.local` and fill in the values:
+
+   | Variable | Purpose |
+   | --- | --- |
+   | `DATABASE_URL` | Postgres connection string |
+   | `SESSION_SECRET` | At least 32 random characters used to sign the session cookie |
+   | `ENABLE_TEST_RESET` | `true` enables `POST /api/test/reset` (local/test only) |
+
+3. Install dependencies and create the schema with seed data:
+
+   ```bash
+   cd frontend
+   npm ci
+   npm run db:reset
+   ```
+
+## Commands
+
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Dev server on http://localhost:3000 |
+| `npm run build` / `npm run start` | Production build and server |
+| `npm run lint` | ESLint |
+| `npx next typegen` then `npx tsc --noEmit` | Type-check (generate route types first) |
+| `npm run db:reset` | Drop, recreate and reseed the database |
+
+## Routes
+
+| Route | Access | Description |
+| --- | --- | --- |
+| `/` | Public | Redirects to `/catalog` |
+| `/catalog?q=&category=` | Public | Product list with search and category filter |
+| `/product/[id]` | Public | Product details and add to cart (404 for unknown ids) |
+| `/login?next=` | Public | Login; returns to `next` (same-site paths only) |
+| `/cart` | Customer | Change quantities, remove items |
+| `/checkout` | Customer | Address, delivery method and card payment |
+| `/orders/[id]` | Customer | Order confirmation (404 for other customers' orders) |
+| `POST /api/test/reset` | Test only | Resets the database; 404 unless `ENABLE_TEST_RESET=true` |
+
+## Behaviour and test data
+
+- **Login:** an unknown email creates an active customer account with that password. The display name is the part before `@`. A known email must match its password. There is no sign-up form, email verification or password reset yet.
+- **Catalog:** 100 products from [docs/products-seed.csv](../docs/products-seed.csv). Available products have 50 units in stock; unavailable ones have 0 and cannot be added to the cart.
+- **Cart:** one active cart per customer, at most 10 units per product and never more than the stock.
+- **Prices:** EUR, 5% VAT already included in the price.
+- **Delivery:** standard costs €4.99, free when the subtotal is €50.00 or more; express always costs €9.99.
+- **Payment:** a simulated provider (about 800 ms) instead of Stripe. Card numbers are checked for format, Luhn checksum, future MM/YY expiry and a 3-digit CVC.
+
+  | Card | Result |
+  | --- | --- |
+  | `4242 4242 4242 4242` | Paid: stock is deducted and the cart is converted |
+  | `4000 0000 0000 0002` | Declined: order `payment_failed`, stock unchanged, cart kept for a retry |
+  | Any other valid number | Rejected as an unsupported test card |
+
+## Structure
+
+```text
+frontend/
+├── app/
+│   ├── (auth)/login/          # Login page
+│   ├── (public)/              # catalog, product/[id]
+│   ├── (customer)/            # cart, checkout, orders/[id] (require a session)
+│   ├── actions/               # Server actions: auth, cart, checkout
+│   └── api/test/reset/        # Test-only database reset
+├── components/                # Forms and UI parts (all controls have labels and data-testid)
+├── lib/                       # db, session, users, products, cart, orders, money, reset-database
+└── scripts/db-reset.ts        # CLI wrapper for the reset
+```
+
+Before changing Next.js code, read [AGENTS.md](AGENTS.md): Next 16 has breaking changes, and its docs are in `node_modules/next/dist/docs`.

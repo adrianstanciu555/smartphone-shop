@@ -1,6 +1,8 @@
 -- Seeds one active staff account per back-office role (synthetic data only).
 -- No credentials are stored in the repo: pass an Argon2 hash at run time, e.g.
 --   psql -v staff_password_hash="'<argon2-hash>'" -f database/seeds/users.sql
+-- Not loaded by the frontend reset: the reference app has no back office yet, and customers
+-- are created on their first login.
 BEGIN;
 
 INSERT INTO users (email, password_hash, name, role, status, email_verified_at)

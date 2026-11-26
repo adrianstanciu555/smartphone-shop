@@ -1,5 +1,7 @@
 -- Loads docs/products-seed.csv (name,category,price,rating,availability).
 -- Run from the repo root with psql (\copy is a psql meta-command).
+-- frontend/lib/reset-database.ts mirrors this logic for `npm run db:reset` and POST /api/test/reset;
+-- keep both in sync.
 BEGIN;
 
 CREATE TEMP TABLE products_seed (

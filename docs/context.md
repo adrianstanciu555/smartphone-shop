@@ -42,6 +42,14 @@ Bluetooth headphones brands include: Samsung, Apple, Xiaomi, Google, Motorola, J
 
 - **Testing Tools:** Playwright Test with TypeScript as the UI automation framework, using the Page Object Model and fixtures. It covers E2E flows (register, login, cart, checkout, order tracking), run in parallel on Chromium, Firefox, and WebKit and in CI via GitHub Actions. Postman collections for API testing (run in CI with Newman). Allure for reporting (`allure-playwright` for UI results, Newman Allure reporter for API results). Jest for backend unit tests, k6 for load testing against the 1,000-orders launch target, OWASP ZAP for security scans.
 
+- **Current Implementation (local reference app):** Only part of the target stack exists so far. `frontend/` is a Next.js 16 app that serves pages and handles login, cart and checkout through server actions that query PostgreSQL directly. It uses the same `database/migrations/schema.sql` and seeds 100 products from `docs/products-seed.csv`. There is no NestJS backend, Redis, OpenSearch, Stripe, courier or email integration yet. Differences from the target:
+  - Login auto-registers unknown emails as active customers. There is no sign-up form, email verification, password reset, lockout or address book.
+  - Sessions use a signed HS256 cookie (8 hours) instead of JWT access and refresh tokens.
+  - Payment is simulated: `4242 4242 4242 4242` succeeds, `4000 0000 0000 0002` is declined, other cards are rejected. There is no separate stock reservation: checkout locks the stock rows (`FOR UPDATE`) and deducts stock in the same transaction as the payment, only when it succeeds. A declined payment therefore never holds stock.
+  - The cart allows at most 10 units per product.
+  - `tests/e2e/` holds the Playwright suite (Chromium only, Page Object Model, fixtures, DB assertions), run in GitHub Actions on push and pull request. Allure, Firefox and WebKit are not set up yet.
+  - See `frontend/README.md` and `tests/e2e/README.md` for details.
+
   
 
 ## Key Features & Modules

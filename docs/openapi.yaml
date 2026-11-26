@@ -2,7 +2,13 @@ openapi: 3.0.3
 info:
   title: Smartphone Shop REST API
   version: 0.1.0
-  description: Modular monolith (NestJS). JWT access + refresh tokens.
+  description: >-
+    Modular monolith (NestJS). JWT access + refresh tokens.
+    This is the target contract for the planned backend; it is not implemented yet.
+    The local reference app in frontend/ covers catalog, login, cart and checkout with Next.js
+    server actions instead of this REST API (see frontend/README.md). Its business values match
+    this contract: standard delivery 4.99 EUR (free from 50.00), express 9.99 EUR, 5% VAT included
+    in prices. It also limits each cart item to 10 units.
 servers:
   - url: https://api.smartphone-shop.com/v1
   - url: https://staging-api.smartphone-shop.com/v1

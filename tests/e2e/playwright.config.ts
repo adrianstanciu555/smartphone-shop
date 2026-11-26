@@ -39,7 +39,8 @@ export default defineConfig({
     : {
         command: `npm run build && npm run start -- --port ${port}`,
         cwd: frontendDir,
-        url: `${baseURL}/catalog`,
+        // /login needs no database, so the server is ready before globalSetup creates and seeds it (fresh CI database).
+        url: `${baseURL}/login`,
         reuseExistingServer: !isCI,
         timeout: 180_000,
         stdout: "ignore",

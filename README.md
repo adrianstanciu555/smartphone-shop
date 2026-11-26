@@ -124,13 +124,13 @@ Planned, not yet created: `backend/` (NestJS API) and `infrastructure/` (Docker,
 
 ## Implementation Status
 
-What the first implementation commits delivered (verified on 2026-11-26 from a clean checkout of `16efccf`):
+What the first implementation commits delivered (verified on 2026-11-26 from a clean checkout of `23dce6c`):
 
 | Commit | Scope | Contents |
 | --- | --- | --- |
-| `619ee40` | Reference app | Next.js 16 app in `frontend/`: catalog with search and category filter, product page, login (auto-registers new emails), cart (max 10 units per product, stock checks), checkout (address, standard/express delivery, simulated card payment), order confirmation, test-only `POST /api/test/reset`. Fixes the delivery method resetting to Standard after a failed checkout submit; adds product and order page titles. |
-| `557d7c9` | E2E suite and CI | Playwright + TypeScript framework in `tests/e2e/` (page objects, fixtures, PostgreSQL helper, test data) with 41 tests. GitHub Actions workflow `.github/workflows/e2e.yml` with a Postgres 17 service. |
-| `16efccf` | Documentation | Frontend and E2E READMEs, this README, a "Current Implementation" section in `docs/context.md`, a scope note in `docs/openapi.yaml`. |
+| `56c200a` | Reference app | Next.js 16 app in `frontend/`: catalog with search and category filter, product page, login (auto-registers new emails), cart (max 10 units per product, stock checks), checkout (address, standard/express delivery, simulated card payment), order confirmation, test-only `POST /api/test/reset`. Fixes the delivery method resetting to Standard after a failed checkout submit; adds product and order page titles. |
+| `47b4b93` | E2E suite and CI | Playwright + TypeScript framework in `tests/e2e/` (page objects, fixtures, PostgreSQL helper, test data) with 41 tests. GitHub Actions workflow `.github/workflows/e2e.yml` with a Postgres 17 service. |
+| `23dce6c` | Documentation | Frontend and E2E READMEs, this README, a "Current Implementation" section in `docs/context.md`, a scope note in `docs/openapi.yaml`. |
 
 E2E coverage (41 tests, 4 tagged `@smoke`):
 
@@ -150,7 +150,7 @@ Verification results:
 | `npm ci`, `npm run typecheck` (tests/e2e) | Pass |
 | `npx playwright test` with `CI=true` (production build, 2 workers) | 41 passed in 1.3 min |
 | Relative links in the README files | All valid |
-| GitHub Actions run | Not run yet (commits not pushed) |
+| GitHub Actions run | Runs on every push to `main` and on pull requests; status in the repository's Actions tab |
 
 Known limitation: in an early manual test, one add-to-cart with quantity 2 added only 1 unit. It could not be reproduced in more than 10 later attempts or in the automated suite.
 
@@ -167,16 +167,16 @@ One small image per product (48 files, about 55 KB in total, 320 px, each under 
 ## Roadmap
 
 - [x] Define project context and architecture
-- [x] Local reference app (`619ee40`)
+- [x] Local reference app (`56c200a`)
   - [x] Catalog: listing, search, category filter, product details, availability
   - [x] Login with signed session cookie; protected cart, checkout and order pages
   - [x] Cart: add, update, remove, 10-unit limit, stock checks
   - [x] Checkout: address, standard/express delivery, simulated card payment, order confirmation
   - [x] Stock deducted on paid orders; declined payments keep stock and cart
   - [x] Test-only database reset (`POST /api/test/reset`, `npm run db:reset`)
-- [x] Playwright E2E suite: 41 tests, page objects, fixtures, DB assertions (`557d7c9`)
-- [x] CI workflow for lint, typecheck and E2E on GitHub Actions (`557d7c9`)
-- [x] Documentation for the reference app and E2E suite (`16efccf`)
+- [x] Playwright E2E suite: 41 tests, page objects, fixtures, DB assertions (`47b4b93`)
+- [x] CI workflow for lint, typecheck and E2E on GitHub Actions (`47b4b93`)
+- [x] Documentation for the reference app and E2E suite (`23dce6c`)
 - [x] Compact product images (WebP photos + SVG drawings) with credits and E2E checks
 - [ ] Set up environments (Dev, Staging, Performance)
 - [ ] Implement full accounts (sign-up, email verification, password reset, addresses)

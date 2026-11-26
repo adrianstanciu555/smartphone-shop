@@ -96,6 +96,20 @@ jobs:
           path: tests/e2e/playwright-report/
           retention-days: 14
 
+      # Uses tests/e2e/allurerc.mjs; runs even when tests fail so the report shows the failures.
+      - name: Generate Allure report
+        if: ${{ !cancelled() }}
+        working-directory: tests/e2e
+        run: npx allure generate
+
+      - name: Upload Allure report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: tests/e2e/allure-report/
+          retention-days: 14
+
       - name: Upload traces and videos of failed tests
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4

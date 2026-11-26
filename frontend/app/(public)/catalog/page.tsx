@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AvailabilityBadge } from "@/components/AvailabilityBadge";
 import { ProductImage } from "@/components/ProductImage";
+import { SearchBox } from "@/components/SearchBox";
 import { CATEGORIES, isCategory, listProducts } from "@/lib/products";
 import { formatEur } from "@/lib/money";
 
@@ -29,7 +30,7 @@ export default async function CatalogPage({ searchParams }: PageProps<"/catalog"
       <form role="search" className="mb-6 flex flex-wrap items-end gap-3" data-testid="catalog-filters">
         <div>
           <label htmlFor="q" className="mb-1 block text-sm font-medium">Search</label>
-          <input id="q" name="q" type="search" defaultValue={q} placeholder="e.g. iPhone" className="rounded border border-slate-300 px-3 py-2" data-testid="search-input" />
+          <SearchBox defaultValue={q} />
         </div>
         <div>
           <label htmlFor="category" className="mb-1 block text-sm font-medium">Category</label>

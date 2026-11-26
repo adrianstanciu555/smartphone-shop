@@ -13,6 +13,12 @@ export class CatalogPage extends BasePage {
   readonly productNames: Locator;
   readonly noResults: Locator;
   readonly productImages: Locator;
+  readonly suggestions: Locator;
+  readonly suggestionNames: Locator;
+  readonly suggestionPrices: Locator;
+  readonly suggestionsLoading: Locator;
+  readonly suggestionsEmpty: Locator;
+  readonly suggestionsError: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -25,6 +31,18 @@ export class CatalogPage extends BasePage {
     this.productNames = page.getByTestId("product-name");
     this.noResults = page.getByTestId("no-results");
     this.productImages = this.productCards.getByTestId("product-image");
+    const panel = page.getByTestId("search-suggestions");
+    this.suggestions = panel.getByTestId("suggestion");
+    this.suggestionNames = panel.getByTestId("suggestion-name");
+    this.suggestionPrices = panel.getByTestId("suggestion-price");
+    this.suggestionsLoading = panel.getByTestId("suggestions-loading");
+    this.suggestionsEmpty = panel.getByTestId("suggestions-empty");
+    this.suggestionsError = panel.getByTestId("suggestions-error");
+  }
+
+  /** Types without submitting, which triggers live suggestions from GET /api/v1/products. */
+  async typeSearch(text: string): Promise<void> {
+    await this.searchInput.fill(text);
   }
 
   async goto(filters: { q?: string; category?: string } = {}): Promise<void> {

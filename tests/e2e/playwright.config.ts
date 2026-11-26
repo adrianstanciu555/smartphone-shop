@@ -1,4 +1,5 @@
 import { existsSync } from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { defineConfig, devices } from "@playwright/test";
 
@@ -21,14 +22,33 @@ export default defineConfig({
   workers: isCI ? 2 : 4,
   timeout: 60_000,
   expect: { timeout: 10_000 },
-  reporter: [["list"], ["html", { open: "never" }]],
+  reporter: [
+    ["list"],
+    ["html", { open: "never" }],
+    [
+      "allure-playwright",
+      {
+        resultsDir: path.join(__dirname, "allure-results"),
+        environmentInfo: {
+          "Base URL": baseURL,
+          "Run mode": isCI ? "CI" : "local",
+          "Node.js": process.version,
+          OS: `${os.platform()} ${os.release()}`,
+        },
+      },
+    ],
+  ],
   use: {
     baseURL,
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
     video: "retain-on-failure",
   },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  projects: [
+    // REST API tests need no browser.
+    { name: "api", testMatch: "api/**/*.spec.ts" },
+    { name: "chromium", testIgnore: "api/**", use: { ...devices["Desktop Chrome"] } },
+  ],
   /*
    * Runs against a production build: `next dev` compiles on demand and is too slow for parallel workers.
    * Next 16 builds into .next/ and dev into .next/dev, so this can run next to `npm run dev` on :3000.

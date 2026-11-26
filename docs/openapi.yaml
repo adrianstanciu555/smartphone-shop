@@ -6,9 +6,16 @@ info:
     Modular monolith (NestJS). JWT access + refresh tokens.
     This is the target contract for the planned backend; it is not implemented yet.
     The local reference app in frontend/ covers catalog, login, cart and checkout with Next.js
-    server actions instead of this REST API (see frontend/README.md). Its business values match
-    this contract: standard delivery 4.99 EUR (free from 50.00), express 9.99 EUR, 5% VAT included
-    in prices. It also limits each cart item to 10 units.
+    server actions. It also serves a subset of these paths under /api/v1 (auth/login, auth/logout,
+    users/me, products, products/{id}, categories, cart, cart/items, cart/items/{productId},
+    checkout, orders/{id}; see tests/e2e/README.md, "API tests"). That subset deviates from this
+    contract: it authenticates with the session cookie instead of bearer tokens (login returns
+    {user}, not a TokenPair); POST /checkout takes the address and test-card fields in the body
+    instead of addressId, returns 402 payment_declined for a declined card and 201 {orderId, status};
+    carts and orders add itemCount, brand, subtotal, tax, delivery and deliveryMethod fields;
+    filters other than q and category are not supported; and the cart limit is answered with
+    422 quantity_limit. Business values match this contract: standard delivery 4.99 EUR
+    (free from 50.00), express 9.99 EUR, 5% VAT included in prices, at most 10 units per cart item.
 servers:
   - url: https://api.smartphone-shop.com/v1
   - url: https://staging-api.smartphone-shop.com/v1
@@ -160,7 +167,7 @@ paths:
     parameters: [{$ref: '#/components/parameters/ProductId'}]
     patch:
       tags: [cart]
-      requestBody: {required: true, content: {application/json: {schema: {type: object, required: [quantity], properties: {quantity: {type: integer, minimum: 1}}}}}}
+      requestBody: {required: true, content: {application/json: {schema: {type: object, required: [quantity], properties: {quantity: {type: integer, minimum: 1, maximum: 10}}}}}}
       responses: {'200': {description: OK, content: {application/json: {schema: {$ref: '#/components/schemas/Cart'}}}}, '409': {description: Insufficient stock}}
     delete:
       tags: [cart]
@@ -419,7 +426,7 @@ components:
     CartItemInput:
       type: object
       required: [productId, quantity]
-      properties: {productId: {type: string, format: uuid}, quantity: {type: integer, minimum: 1}}
+      properties: {productId: {type: string, format: uuid}, quantity: {type: integer, minimum: 1, maximum: 10, description: 'At most 10 units of one product in the cart, counting units already there.'}}
     CartItem:
       type: object
       properties:

@@ -2,7 +2,7 @@
 
 A small Next.js app implementing the customer journey from [docs/context.md](../docs/context.md): catalog, login, cart, checkout and order confirmation. It is the system under test for the Playwright suite in [tests/e2e](../tests/e2e/README.md).
 
-It talks to PostgreSQL directly from server components and server actions. There is no separate backend yet, so the REST contract in [docs/openapi.yaml](../docs/openapi.yaml) is not implemented here.
+It talks to PostgreSQL directly from server components and server actions. There is no separate backend yet. A small JSON API under `/api/v1` implements a cookie-authenticated subset of the REST contract in [docs/openapi.yaml](../docs/openapi.yaml), reusing the same `lib/` logic (see [API tests](../tests/e2e/README.md#api-tests)).
 
 ## Stack
 
@@ -45,12 +45,13 @@ It talks to PostgreSQL directly from server components and server actions. There
 | Route | Access | Description |
 | --- | --- | --- |
 | `/` | Public | Redirects to `/catalog` |
-| `/catalog?q=&category=` | Public | Product list with search and category filter |
+| `/catalog?q=&category=` | Public | Product list with search and category filter; the search box shows live suggestions from `GET /api/v1/products` |
 | `/product/[id]` | Public | Product details and add to cart (404 for unknown ids) |
 | `/login?next=` | Public | Login; returns to `next` (same-site paths only) |
 | `/cart` | Customer | Change quantities, remove items |
 | `/checkout` | Customer | Address, delivery method and card payment |
 | `/orders/[id]` | Customer | Order confirmation (404 for other customers' orders) |
+| `/api/v1/...` | Mixed | JSON API: `auth/login`, `auth/logout`, `users/me`, `products`, `products/{id}`, `categories` (public), `cart`, `cart/items`, `cart/items/{productId}`, `checkout`, `orders/{id}` (need the session cookie) |
 | `POST /api/test/reset` | Test only | Resets the database; 404 unless `ENABLE_TEST_RESET=true` |
 
 ## Behaviour and test data
@@ -61,7 +62,7 @@ It talks to PostgreSQL directly from server components and server actions. There
 - **Cart:** one active cart per customer, at most 10 units per product and never more than the stock.
 - **Prices:** EUR, 5% VAT already included in the price.
 - **Delivery:** standard costs €4.99, free when the subtotal is €50.00 or more; express always costs €9.99.
-- **Payment:** a simulated provider (about 800 ms) instead of Stripe. Card numbers are checked for format, Luhn checksum, future MM/YY expiry and a 3-digit CVC.
+- **Payment:** a simulated provider (about 800 ms in the UI, no delay through the API) instead of Stripe. Card numbers are checked for format, Luhn checksum, future MM/YY expiry and a 3-digit CVC.
 
   | Card | Result |
   | --- | --- |
@@ -78,9 +79,10 @@ frontend/
 │   ├── (public)/              # catalog, product/[id]
 │   ├── (customer)/            # cart, checkout, orders/[id] (require a session)
 │   ├── actions/               # Server actions: auth, cart, checkout
+│   ├── api/v1/                # JSON API route handlers (auth, users, products, categories, cart, checkout, orders)
 │   └── api/test/reset/        # Test-only database reset
-├── components/                # Forms and UI parts (all controls have labels and data-testid)
-├── lib/                       # db, session, users, products, cart, orders, money, reset-database
+├── components/                # Forms and UI parts, incl. SearchBox (client, live suggestions); all controls have labels and data-testid
+├── lib/                       # db, session, users, products, cart, orders, money, reset-database, api (JSON helpers), checkout-schema (shared validation)
 ├── public/products/           # Product images (phones/*.webp|svg, accessories/*.svg) and ATTRIBUTION.md
 └── scripts/                   # db-reset.ts (CLI reset), build-product-images.ts (images:build)
 ```

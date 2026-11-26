@@ -17,7 +17,9 @@ export type CartItem = {
 
 export type Cart = { items: CartItem[]; itemCount: number; subtotalCents: number };
 
-export type CartResult = { ok: true } | { ok: false; error: string };
+export type CartErrorCode = "not_found" | "not_in_cart" | "out_of_stock" | "insufficient_stock" | "quantity_limit";
+
+export type CartResult = { ok: true } | { ok: false; code: CartErrorCode; error: string };
 
 async function getOrCreateActiveCartId(client: PoolClient, userId: string): Promise<string> {
   await client.query(
@@ -96,12 +98,12 @@ async function availableStock(client: PoolClient, productId: string): Promise<nu
 }
 
 export async function addToCart(userId: string, productId: string, quantity: number): Promise<CartResult> {
-  if (!isUuid(productId)) return { ok: false, error: "Product not found." };
+  if (!isUuid(productId)) return { ok: false, code: "not_found", error: "Product not found." };
 
   return withTransaction(async (client) => {
     const available = await availableStock(client, productId);
-    if (available === null) return { ok: false, error: "Product not found." };
-    if (available <= 0) return { ok: false, error: "This product is out of stock." };
+    if (available === null) return { ok: false, code: "not_found", error: "Product not found." };
+    if (available <= 0) return { ok: false, code: "out_of_stock", error: "This product is out of stock." };
 
     const cartId = await getOrCreateActiveCartId(client, userId);
     const { rows } = await client.query<{ quantity: number }>(
@@ -111,10 +113,10 @@ export async function addToCart(userId: string, productId: string, quantity: num
     const newQuantity = (rows[0]?.quantity ?? 0) + quantity;
 
     if (newQuantity > MAX_QUANTITY_PER_ITEM) {
-      return { ok: false, error: `You can buy at most ${MAX_QUANTITY_PER_ITEM} units of this product.` };
+      return { ok: false, code: "quantity_limit", error: `You can buy at most ${MAX_QUANTITY_PER_ITEM} units of this product.` };
     }
     if (newQuantity > available) {
-      return { ok: false, error: `Only ${available} unit(s) available.` };
+      return { ok: false, code: "insufficient_stock", error: `Only ${available} unit(s) available.` };
     }
 
     await client.query(
@@ -127,31 +129,48 @@ export async function addToCart(userId: string, productId: string, quantity: num
 }
 
 export async function updateCartItem(userId: string, productId: string, quantity: number): Promise<CartResult> {
-  if (!isUuid(productId)) return { ok: false, error: "Product not found." };
+  if (!isUuid(productId)) return { ok: false, code: "not_found", error: "Product not found." };
 
   return withTransaction(async (client) => {
-    const available = await availableStock(client, productId);
-    if (available === null) return { ok: false, error: "Product not found." };
-    if (quantity > MAX_QUANTITY_PER_ITEM) {
-      return { ok: false, error: `You can buy at most ${MAX_QUANTITY_PER_ITEM} units of this product.` };
-    }
-    if (quantity > available) return { ok: false, error: `Only ${available} unit(s) available.` };
+    const inCart = await client.query(
+      `SELECT 1 FROM cart_items ci JOIN carts c ON c.id = ci.cart_id
+       WHERE c.user_id = $1 AND c.status = 'active' AND ci.product_id = $2
+       FOR UPDATE OF ci`,
+      [userId, productId],
+    );
+    if (!inCart.rowCount) return { ok: false, code: "not_in_cart", error: "This product is not in your cart." };
 
-    const cartId = await getOrCreateActiveCartId(client, userId);
-    await client.query("UPDATE cart_items SET quantity = $3 WHERE cart_id = $1 AND product_id = $2", [
-      cartId,
-      productId,
-      quantity,
-    ]);
+    const available = await availableStock(client, productId);
+    if (available === null) return { ok: false, code: "not_found", error: "Product not found." };
+    if (quantity > MAX_QUANTITY_PER_ITEM) {
+      return { ok: false, code: "quantity_limit", error: `You can buy at most ${MAX_QUANTITY_PER_ITEM} units of this product.` };
+    }
+    if (quantity > available) return { ok: false, code: "insufficient_stock", error: `Only ${available} unit(s) available.` };
+
+    await client.query(
+      `UPDATE cart_items ci SET quantity = $3 FROM carts c
+       WHERE ci.cart_id = c.id AND c.user_id = $1 AND c.status = 'active' AND ci.product_id = $2`,
+      [userId, productId, quantity],
+    );
     return { ok: true };
   });
 }
 
-export async function removeCartItem(userId: string, productId: string): Promise<void> {
-  if (!isUuid(productId)) return;
-  await pool.query(
+/** Returns false when the product was not in the cart. */
+export async function removeCartItem(userId: string, productId: string): Promise<boolean> {
+  if (!isUuid(productId)) return false;
+  const { rowCount } = await pool.query(
     `DELETE FROM cart_items ci USING carts c
      WHERE ci.cart_id = c.id AND c.user_id = $1 AND c.status = 'active' AND ci.product_id = $2`,
     [userId, productId],
+  );
+  return (rowCount ?? 0) > 0;
+}
+
+export async function clearCart(userId: string): Promise<void> {
+  await pool.query(
+    `DELETE FROM cart_items ci USING carts c
+     WHERE ci.cart_id = c.id AND c.user_id = $1 AND c.status = 'active'`,
+    [userId],
   );
 }

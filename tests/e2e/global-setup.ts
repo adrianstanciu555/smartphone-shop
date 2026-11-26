@@ -1,9 +1,21 @@
+import { mkdirSync, readdirSync, rmSync } from "node:fs";
+import path from "node:path";
 import { request, type FullConfig } from "@playwright/test";
 
 // First requests to each route are slow on a dev server; harmless on a production build.
 const WARM_UP_PATHS = ["/catalog", "/login", "/cart", "/checkout", "/product/00000000-0000-0000-0000-000000000000"];
 
+/** Empties allure-results so a report only contains this run (the folder is kept for `allure run` / `allure watch`). */
+function clearAllureResults(rootDir: string): void {
+  const resultsDir = path.join(rootDir, "allure-results");
+  mkdirSync(resultsDir, { recursive: true });
+  for (const entry of readdirSync(resultsDir)) {
+    rmSync(path.join(resultsDir, entry), { recursive: true, force: true });
+  }
+}
+
 export default async function globalSetup(config: FullConfig): Promise<void> {
+  clearAllureResults(path.dirname(config.configFile ?? __filename));
   const baseURL = config.projects[0].use.baseURL;
   const api = await request.newContext({ baseURL });
   try {

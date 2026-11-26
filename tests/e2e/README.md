@@ -22,14 +22,18 @@ npx playwright install chromium
 | --- | --- |
 | `npm test` | Run all tests (headless, 4 workers locally) |
 | `npm run test:smoke` | Run only tests tagged `@smoke` |
+| `npm run test:api` | Run only the REST API tests (`api` project, no browser) |
+| `npm run test:mocks` | Run only the UI tests that mock the API with `page.route()` |
 | `npm run test:headed` | Run with a visible browser |
 | `npm run test:ui` | Open Playwright UI mode |
 | `npm run report` | Open the last HTML report |
+| `npm run allure` | Run all tests and build an Allure report (see [ALLURE.md](ALLURE.md)) |
+| `npm run allure:open` | Open the last Allure report |
 | `npm run typecheck` | Type-check the framework |
 
 By default Playwright runs `npm run build && npm run start -- --port 3100` in `frontend/` and tests against `http://localhost:3100`. It uses a production build because `next dev` compiles on demand and is too slow under parallel workers. Next 16 keeps dev output in `.next/dev`, so this can run while `npm run dev` is running on port 3000. Locally, an already running server on the port is reused.
 
-Before the run, global setup calls `POST /api/test/reset`, which **wipes and reseeds the database**.
+Before the run, global setup empties `allure-results/` and calls `POST /api/test/reset`, which **wipes and reseeds the database**.
 
 ### Environment variables
 
@@ -45,16 +49,59 @@ Before the run, global setup calls `POST /api/test/reset`, which **wipes and res
 
 ```text
 tests/e2e/
-├── playwright.config.ts   # Workers, timeouts, reporters, webServer
-├── global-setup.ts        # DB reset + route warm-up
+├── playwright.config.ts   # Workers, timeouts, reporters (list, HTML, Allure), webServer
+├── allurerc.mjs           # Allure 3 report config: output, history, categories
+├── ALLURE.md              # How to run, read and extend the Allure reports
+├── framework-mindmap.md   # Mermaid mindmap of the whole framework and all specs
+├── global-setup.ts        # Clears allure-results, DB reset + route warm-up
 ├── src/
+│   ├── api/ApiClient.ts   # REST client for /api/v1 + expectStatus / expectError
+│   ├── api/contracts.ts   # Response contracts as asymmetric matchers (use with toEqual)
 │   ├── data/test-data.ts  # Cards, delivery fees, seeded products, customer/address factories
-│   ├── fixtures/index.ts  # Extended `test`: page objects, db, customer, signedInCustomer, addToCart
+│   ├── fixtures/index.ts  # Extended `test`: page objects, db, customer, signedInCustomer, addToCart, api, customerApi, newCustomerApi
 │   ├── helpers/db.ts      # Read-only Postgres queries for backend assertions (stock, orders, carts)
+│   ├── mocks/             # page.route() helpers and fake data (ProductsApiMock)
 │   ├── pages/             # Page objects (Login, Catalog, Product, Cart, Checkout, Order, Header)
 │   └── utils/money.ts     # EUR formatting and VAT helpers
 └── tests/                 # Specs: auth, catalog, cart, checkout, access-control
+    ├── api/               # REST API specs (products, auth, cart, checkout) - `api` project; mindmap in api-tests-mindmap.md
+    └── mocks/             # UI specs against a mocked API (search suggestions)
 ```
+
+## API tests
+
+The app exposes a small JSON API under `/api/v1` (see `frontend/app/api/v1`). It reuses the same business logic as the server actions and a subset of the paths in [`docs/openapi.yaml`](../../docs/openapi.yaml). Auth uses the same `session` cookie as the UI, sent by `POST /api/v1/auth/login`.
+
+| Endpoint | Notes |
+| --- | --- |
+| `POST /auth/login`, `POST /auth/logout`, `GET /users/me` | Unknown emails register, like the login form |
+| `GET /products?q&category&page&pageSize`, `GET /products/{id}`, `GET /categories` | Public |
+| `GET` / `DELETE /cart`, `POST /cart/items`, `PATCH` / `DELETE /cart/items/{productId}` | Max 10 units per item |
+| `POST /checkout` | `Idempotency-Key` header (UUID) required; flat body with address, `deliveryMethod` and card fields; 402 when the card is declined |
+| `GET /orders/{id}` | 404 for other customers' orders |
+
+Errors use `{ code, message, details? }`. Bodies must be `application/json` (415 otherwise).
+
+| Status | `code` |
+| --- | --- |
+| 400 | `invalid_json`, `idempotency_key_required` |
+| 401 | `unauthorized`, `invalid_credentials` |
+| 402 | `payment_declined` (body also has `orderId`) |
+| 404 | `not_found`, `not_in_cart` |
+| 409 | `out_of_stock`, `insufficient_stock`, `cart_empty` |
+| 415 | `unsupported_media_type` |
+| 422 | `validation_error` (with `details[].field`), `quantity_limit` |
+
+- `api` gives an anonymous client and `customerApi` logs that same client in as a fresh customer, so don't use both in one test expecting different sessions. `newCustomerApi()` creates extra customers with their own cookie jars.
+- Assert contracts with `expect(body).toEqual(productContract())`. `toEqual` also fails on unexpected fields.
+- To set up UI state quickly, wrap `page.request` in `ApiClient`. It shares the browser's cookies (see the last test in `cart.spec.ts`).
+- Stock-changing API tests use `API_PRODUCTS`. No other spec changes their stock.
+
+## API mocks
+
+The catalog search box fetches live suggestions from `GET /api/v1/products` in the browser. `ProductsApiMock` intercepts that call with `page.route()`. It can return fixed data (`respondWith`), HTTP errors (`failWith`), a network failure (`abort`), a held response for loading states (`held`), or a modified real response (`patchRealResponse`). It also records each request URL in `mock.requests`.
+
+Only browser requests can be mocked. Server-rendered pages and server actions talk to the database directly, so they always use real data.
 
 ## Conventions
 

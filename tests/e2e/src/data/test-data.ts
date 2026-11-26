@@ -32,6 +32,17 @@ export const PRODUCTS = {
   outOfStock: "Baseus 20W USB-C Charger Black", // stock 0
 } as const;
 
+/** Products whose stock is changed only by the API checkout specs (one product per test). */
+export const API_PRODUCTS = {
+  magneticCable: "Anker Magnetic Cable 1m Blue", // 14.99
+  lightningCable: "Anker USB-C to Lightning Cable 2m Black", // 19.99
+  wirelessCharger: "Anker 15W Wireless Charger Black", // 24.99
+  gan65Charger: "Anker 65W GaN Charger White", // 39.99
+  bluetoothHeadphones: "Anker Bluetooth Headphones Black", // 49.99
+  chargingStand: "Anker 3-in-1 Charging Stand Black", // 69.99
+  outOfStock: "Belkin Anti-Glare Film for Galaxy S24", // stock 0
+} as const;
+
 export const CATALOG = {
   totalProducts: 100,
   categories: { smartphone: 25, case: 20, charger: 15, cable: 15, headphones: 15, screen_protector: 10 },
@@ -71,4 +82,9 @@ export type Payment = { cardName: string; cardNumber: string; expiry: string; cv
 export function payment(cardNumber: string = CARDS.success): Payment {
   const nextYear = (new Date().getFullYear() + 1) % 100;
   return { cardName: "Ana Popescu", cardNumber, expiry: `12/${String(nextYear).padStart(2, "0")}`, cvc: "123" };
+}
+
+/** JSON body for POST /api/v1/checkout. */
+export function checkoutBody(cardNumber: string = CARDS.success, deliveryMethod: "standard" | "express" = "standard") {
+  return { ...ADDRESS, deliveryMethod, ...payment(cardNumber) };
 }

@@ -26,7 +26,7 @@ export type PlaceOrderInput = {
 
 export type PlaceOrderResult =
   | { ok: true; orderId: string }
-  | { ok: false; error: string; orderId?: string };
+  | { ok: false; code: "payment_declined" | "cart_empty" | "insufficient_stock"; error: string; orderId?: string };
 
 type LockedItem = {
   product_id: string;
@@ -49,7 +49,9 @@ export async function placeOrder(userId: string, input: PlaceOrderInput): Promis
   );
   if (previous.rows[0]) {
     const { id, status } = previous.rows[0];
-    return status === "paid" ? { ok: true, orderId: id } : { ok: false, error: "Payment declined.", orderId: id };
+    return status === "paid"
+      ? { ok: true, orderId: id }
+      : { ok: false, code: "payment_declined", error: "Payment declined.", orderId: id };
   }
 
   const paymentSucceeds = input.cardNumber === TEST_CARDS.success;
@@ -60,7 +62,7 @@ export async function placeOrder(userId: string, input: PlaceOrderInput): Promis
       [userId],
     );
     const cartId = cart.rows[0]?.id;
-    if (!cartId) return { ok: false, error: "Your cart is empty." };
+    if (!cartId) return { ok: false, code: "cart_empty", error: "Your cart is empty." };
 
     const { rows: items } = await client.query<LockedItem>(
       `SELECT ci.product_id, p.name, p.sku, p.price, p.tax_rate, ci.quantity,
@@ -73,11 +75,11 @@ export async function placeOrder(userId: string, input: PlaceOrderInput): Promis
        FOR UPDATE OF s`,
       [cartId],
     );
-    if (items.length === 0) return { ok: false, error: "Your cart is empty." };
+    if (items.length === 0) return { ok: false, code: "cart_empty", error: "Your cart is empty." };
 
     const shortage = items.find((item) => item.quantity > Number(item.available));
     if (shortage) {
-      return { ok: false, error: `Not enough stock for ${shortage.name}. Please update your cart.` };
+      return { ok: false, code: "insufficient_stock", error: `Not enough stock for ${shortage.name}. Please update your cart.` };
     }
 
     const lines = items.map((item) => {
@@ -138,7 +140,7 @@ export async function placeOrder(userId: string, input: PlaceOrderInput): Promis
         "INSERT INTO order_status_history (order_id, from_status, to_status, note) VALUES ($1, 'pending', 'payment_failed', 'card_declined')",
         [orderId],
       );
-      return { ok: false, error: "Payment declined. Your card was not charged.", orderId };
+      return { ok: false, code: "payment_declined", error: "Payment declined. Your card was not charged.", orderId };
     }
 
     for (const line of lines) {

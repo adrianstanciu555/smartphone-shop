@@ -1,3 +1,4 @@
+import { ApiClient, expectStatus } from "../src/api/ApiClient";
 import { MAX_QUANTITY_PER_ITEM, PRODUCTS } from "../src/data/test-data";
 import { expect, test } from "../src/fixtures";
 import { formatEur } from "../src/utils/money";
@@ -101,5 +102,22 @@ test.describe("Cart", () => {
 
     await expect(page).toHaveURL(/\/cart$/);
     await expect(cartPage.emptyState).toBeVisible();
+  });
+
+  test("a cart filled through the API is shown in the UI", async ({ page, cartPage, header, db, signedInCustomer }) => {
+    void signedInCustomer;
+    // page.request shares the browser context's cookies, so it acts as the logged-in customer.
+    const api = new ApiClient(page.request);
+    const phoneCase = await db.getProductByName(PRODUCTS.iphoneCase);
+    const cable = await db.getProductByName(PRODUCTS.budgetCable);
+    await expectStatus(await api.addCartItem(phoneCase.id, 2), 200);
+    await expectStatus(await api.addCartItem(cable.id, 1), 200);
+
+    await cartPage.goto();
+
+    await expect(cartPage.items).toHaveCount(2);
+    await expect(cartPage.item(PRODUCTS.iphoneCase).quantityInput).toHaveValue("2");
+    await expect(cartPage.subtotal).toHaveText(formatEur(phoneCase.priceCents * 2 + cable.priceCents));
+    await header.expectCartCount(3);
   });
 });

@@ -58,6 +58,7 @@ It talks to PostgreSQL directly from server components and server actions. There
 
 - **Login:** an unknown email creates an active customer account with that password. The display name is the part before `@`. A known email must match its password. There is no sign-up form, email verification or password reset yet.
 - **Catalog:** 100 products from [docs/products-seed.csv](../docs/products-seed.csv). Available products have 50 units in stock; unavailable ones have 0 and cannot be added to the cart.
+- **Search suggestions:** after at least 2 characters, the search box waits 250 ms and shows up to 5 matching products from `GET /api/v1/products`, with links to their pages. On an API error it shows "Suggestions are unavailable"; the Apply button still runs the normal search.
 - **Images:** one image per product, seeded into `product_images` from [docs/product-images.csv](../docs/product-images.csv) and served from `public/products/` (48 files, about 55 KB in total, each 320 px and under 13 KB). Six phone models use freely licensed Wikimedia Commons photos converted to WebP: iPhone 15, Pixel 8, Galaxy S24, Xperia 1 V, Find X7 and X100. All storage variants of a model share the photo. HONOR Magic6, Motorola Edge 40, OnePlus Nord 3, Redmi Note 13 and all accessories use simple SVG drawings, because no suitable free photo exists. Credits and licences are in [public/products/ATTRIBUTION.md](public/products/ATTRIBUTION.md).
 - **Cart:** one active cart per customer, at most 10 units per product and never more than the stock.
 - **Prices:** EUR, 5% VAT already included in the price.
@@ -69,6 +70,14 @@ It talks to PostgreSQL directly from server components and server actions. There
   | `4242 4242 4242 4242` | Paid: stock is deducted and the cart is converted |
   | `4000 0000 0000 0002` | Declined: order `payment_failed`, stock unchanged, cart kept for a retry |
   | Any other valid number | Rejected as an unsupported test card |
+
+- **JSON API:** same rules as the UI, with the endpoints, error codes and differences from the OpenAPI contract described in [tests/e2e/README.md](../tests/e2e/README.md#api-tests) and the `docs/openapi.yaml` description.
+
+## Known limitations
+
+- No rate limiting or account lockout on login (form and API).
+- No stock reservation: checkout locks the stock rows and deducts stock only when the payment succeeds.
+- The search suggestions panel has no close action; it hides when the term is shorter than 2 characters.
 
 ## Structure
 

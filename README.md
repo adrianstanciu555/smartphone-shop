@@ -159,7 +159,7 @@ Three Mermaid mindmaps give a visual overview, from the whole project down to si
 
 ## Implementation Status
 
-What the implementation commits delivered (first three verified on 2026-11-26 from a clean checkout of `23dce6c`; commits up to `45c7c54` verified by the GitHub Actions run on `68025c6`; the REST API and Allure work was verified on branch commit `14f027b` by [run 45891413207](https://github.com/adrianstanciu555/smartphone-shop/actions/runs/45891413207) and squashed into `main` without code changes):
+What the implementation commits delivered (first three verified on 2026-11-26 from a clean checkout of `23dce6c`; commits up to `68025c6` verified by the GitHub Actions run on `68025c6`, `45c7c54` is documentation only; `acbdd99` verified by [run 45893176165](https://github.com/adrianstanciu555/smartphone-shop/actions/runs/45893176165) on `main`):
 
 | Commit | Scope | Contents |
 | --- | --- | --- |
@@ -170,8 +170,8 @@ What the implementation commits delivered (first three verified on 2026-11-26 fr
 | `f7e68ff` | Product images | One compact image per product (see [Product images](#product-images)), seeded into `product_images`; 2 new E2E tests. |
 | `68025c6` | CI fix | Playwright waits for `/login` instead of `/catalog`, so the server is ready before globalSetup creates the schema on CI's empty database. |
 | `45c7c54` | Documentation | README update for the image and CI fix commits and the CI results. |
-| Squash of `feat/api-tests-allure` | REST API, API tests and mocks | JSON API under `/api/v1` (auth, products, categories, cart, checkout with `Idempotency-Key`, orders), live search suggestions on the catalog, 66 API tests (`api` project), 12 mocked-API UI tests, 1 API-setup UI test, framework and API test mindmaps, documentation updates. |
-| Squash of `feat/api-tests-allure` | Allure reporting | Allure Report 3 for all tests (`allure-playwright`, `allurerc.mjs`): automatic layer/epic/feature/severity labels, request/response attachments for every API call, failure categories, local history, CI artifact. Guide in [tests/e2e/ALLURE.md](tests/e2e/ALLURE.md). |
+| `acbdd99` | REST API, API tests and mocks | Squash of the `feat/api-tests-allure` branch (deleted after the merge). JSON API under `/api/v1` (auth, products, categories, cart, checkout with `Idempotency-Key`, orders), live search suggestions on the catalog, 66 API tests (`api` project), 12 mocked-API UI tests, 1 API-setup UI test, framework and API test mindmaps, documentation updates. |
+| `acbdd99` | Allure reporting | Allure Report 3 for all tests (`allure-playwright`, `allurerc.mjs`): automatic layer/epic/feature/severity labels, request/response attachments for every API call, failure categories, local history, CI artifact. Guide in [tests/e2e/ALLURE.md](tests/e2e/ALLURE.md). |
 
 E2E coverage (122 tests in 10 spec files, 8 tagged `@smoke`: 4 UI and 4 API):
 
@@ -199,9 +199,15 @@ Verification results:
 | GitHub Actions run on `68025c6` | [Passed](https://github.com/adrianstanciu555/smartphone-shop/actions/runs/45849557296) (lint, typecheck, 43 E2E tests). The run on `f7e68ff` failed with a web server timeout, fixed in `68025c6`. |
 | Local `npx playwright test` after the REST API work (production build, 4 workers, 2026-11-26) | 121 passed in 2.0 min; frontend lint and type-check and E2E type-check pass. |
 | Local `npm run allure` after the code review (2026-11-26) | 122 passed in 2.1 min; 122 Allure results with labels and API attachments, report and history generated; frontend lint and type-check and E2E type-check pass. |
-| GitHub Actions run on `14f027b` (branch `feat/api-tests-allure`, manual dispatch, 2026-11-26; same code as the squash on `main`) | [Passed](https://github.com/adrianstanciu555/smartphone-shop/actions/runs/45891413207): lint, typecheck, 122 tests in 51 s on a fresh database, Allure report generated and uploaded (`allure-report` artifact, 3 MB) next to `playwright-report`. |
+| GitHub Actions run on `14f027b` (branch `feat/api-tests-allure`, manual dispatch, 2026-11-26; same code as `acbdd99`) | [Passed](https://github.com/adrianstanciu555/smartphone-shop/actions/runs/45891413207): lint, typecheck, 122 tests in 51 s on a fresh database, Allure report generated and uploaded (`allure-report` artifact, 3 MB) next to `playwright-report`. |
+| GitHub Actions run on `acbdd99` (push to `main`, 2026-11-26) | [Passed](https://github.com/adrianstanciu555/smartphone-shop/actions/runs/45893176165): lint, typecheck, 122 tests in 42 s, `playwright-report` and `allure-report` artifacts uploaded. |
 
-Known limitation: in an early manual test, one add-to-cart with quantity 2 added only 1 unit. It could not be reproduced in more than 10 later attempts or in the automated suite.
+Known limitations:
+
+- In an early manual test, one add-to-cart with quantity 2 added only 1 unit. It could not be reproduced in more than 10 later attempts or in the automated suite.
+- Login (form and `POST /api/v1/auth/login`) has no rate limiting or account lockout yet.
+- The catalog search suggestions panel has no close action (Escape or click outside); it hides when the term is shorter than 2 characters.
+- `npm audit` in `tests/e2e` reports 6 moderate vulnerabilities in dependencies of the Allure packages (dev-only, not shipped with the app).
 
 ### Product images
 
@@ -224,16 +230,17 @@ One small image per product (48 files, about 55 KB in total, 320 px, each under 
   - [x] Stock deducted on paid orders; declined payments keep stock and cart
   - [x] Test-only database reset (`POST /api/test/reset`, `npm run db:reset`)
 - [x] Playwright E2E suite: 43 tests, page objects, fixtures, DB assertions (`47b4b93`, `f7e68ff`)
-- [x] CI workflow for lint, typecheck and E2E on GitHub Actions, green on `main` (`47b4b93`, `68025c6`)
+- [x] CI workflow for lint, typecheck and E2E on GitHub Actions, green on `main` (`47b4b93`, `68025c6`, `acbdd99`)
 - [x] Documentation for the reference app and E2E suite (`23dce6c`, `79b3932`, `45c7c54`)
 - [x] Compact product images (WebP photos + SVG drawings) with credits and E2E checks (`f7e68ff`)
-- [x] JSON API subset under `/api/v1`, 66 API tests, 12 mocked-API UI tests and test mindmaps; suite now 122 tests
-- [x] Allure reporting for UI, mocked-API and API tests, locally and in CI
+- [x] JSON API subset under `/api/v1`, 66 API tests, 12 mocked-API UI tests and test mindmaps; suite now 122 tests (`acbdd99`)
+- [x] Allure reporting for UI, mocked-API and API tests, locally and in CI (`acbdd99`)
 - [ ] Set up environments (Dev, Staging, Performance)
 - [ ] Implement full accounts (sign-up, email verification, password reset, addresses)
 - [ ] Replace the simulated payment with Stripe
 - [ ] Implement orders, inventory, and shipping (order history, tracking, cancellation, returns, stock reservation)
 - [ ] Build admin back office
+- [ ] Login rate limiting and account lockout
 - [ ] Cross-browser E2E (Firefox, WebKit)
 - [ ] Performance and security testing
 - [ ] Launch

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AvailabilityBadge } from "@/components/AvailabilityBadge";
+import { ProductImage } from "@/components/ProductImage";
 import { CATEGORIES, isCategory, listProducts } from "@/lib/products";
 import { formatEur } from "@/lib/money";
 
@@ -57,10 +58,10 @@ export default async function CatalogPage({ searchParams }: PageProps<"/catalog"
         <p data-testid="no-results">No products match your search.</p>
       ) : (
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-testid="product-list">
-          {products.map((product) => (
+          {products.map((product, index) => (
               <li key={product.id} className="rounded border border-slate-200 bg-white p-4 shadow-sm" data-testid="product-card" data-product-id={product.id}>
-                <div aria-hidden className="mb-3 flex h-32 items-center justify-center rounded bg-slate-100 text-3xl font-bold text-slate-400">
-                  {product.brand.slice(0, 2).toUpperCase()}
+                <div className="mb-3">
+                  <ProductImage product={product} size={128} preload={index < 3} />
                 </div>
                 <p className="text-xs uppercase text-slate-500" data-testid="product-brand">{product.brand}</p>
                 <h2 className="font-semibold">

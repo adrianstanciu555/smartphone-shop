@@ -154,6 +154,16 @@ Verification results:
 
 Known limitation: in an early manual test, one add-to-cart with quantity 2 added only 1 unit. It could not be reproduced in more than 10 later attempts or in the automated suite.
 
+### Product images
+
+One small image per product (48 files, about 55 KB in total, 320 px, each under 13 KB), seeded into `product_images` from `docs/product-images.csv` and shown on the catalog cards and product page.
+
+- **Photos:** six phone models (iPhone 15, Pixel 8, Galaxy S24, Xperia 1 V, OPPO Find X7, Vivo X100) use freely licensed Wikimedia Commons photos (CC BY-SA 4.0 / CC0), converted to WebP.
+- **Drawings:** HONOR Magic6, Motorola Edge 40, OnePlus Nord 3, Redmi Note 13 and all accessories use SVG drawings, because no suitable free photo exists.
+- **Generator:** `npm run images:build` in `frontend/`.
+- **Credits:** [frontend/public/products/ATTRIBUTION.md](frontend/public/products/ATTRIBUTION.md).
+- **Tests:** two new E2E tests (43 in total). Every catalog card has an image with alt text served as WebP/SVG under 30 KB, and the product page shows the model photo.
+
 ## Roadmap
 
 - [x] Define project context and architecture
@@ -167,6 +177,7 @@ Known limitation: in an early manual test, one add-to-cart with quantity 2 added
 - [x] Playwright E2E suite: 41 tests, page objects, fixtures, DB assertions (`557d7c9`)
 - [x] CI workflow for lint, typecheck and E2E on GitHub Actions (`557d7c9`)
 - [x] Documentation for the reference app and E2E suite (`16efccf`)
+- [x] Compact product images (WebP photos + SVG drawings) with credits and E2E checks
 - [ ] Set up environments (Dev, Staging, Performance)
 - [ ] Implement full accounts (sign-up, email verification, password reset, addresses)
 - [ ] Replace the simulated payment with Stripe

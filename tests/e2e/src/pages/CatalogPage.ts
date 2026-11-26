@@ -12,6 +12,7 @@ export class CatalogPage extends BasePage {
   readonly productCards: Locator;
   readonly productNames: Locator;
   readonly noResults: Locator;
+  readonly productImages: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -23,6 +24,7 @@ export class CatalogPage extends BasePage {
     this.productCards = page.getByTestId("product-card");
     this.productNames = page.getByTestId("product-name");
     this.noResults = page.getByTestId("no-results");
+    this.productImages = this.productCards.getByTestId("product-image");
   }
 
   async goto(filters: { q?: string; category?: string } = {}): Promise<void> {

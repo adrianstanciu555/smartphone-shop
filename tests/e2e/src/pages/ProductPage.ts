@@ -13,6 +13,7 @@ export class ProductPage extends BasePage {
   readonly successMessage: Locator;
   readonly errorMessage: Locator;
   readonly backToCatalog: Locator;
+  readonly image: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -27,6 +28,7 @@ export class ProductPage extends BasePage {
     this.successMessage = page.getByTestId("add-to-cart-success");
     this.errorMessage = page.getByTestId("add-to-cart-error");
     this.backToCatalog = page.getByTestId("back-to-catalog");
+    this.image = this.details.getByTestId("product-image");
   }
 
   async goto(productId: string) {

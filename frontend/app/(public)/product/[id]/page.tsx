@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { cache } from "react";
 import { AddToCartForm } from "@/components/AddToCartForm";
 import { AvailabilityBadge } from "@/components/AvailabilityBadge";
+import { ProductImage } from "@/components/ProductImage";
 import { MAX_QUANTITY_PER_ITEM } from "@/lib/cart";
 import { formatEur } from "@/lib/money";
 import { getProduct } from "@/lib/products";
@@ -23,9 +24,7 @@ export default async function ProductPage({ params }: PageProps<"/product/[id]">
 
   return (
     <article className="grid gap-8 md:grid-cols-2" data-testid="product-details" data-product-id={product.id}>
-      <div aria-hidden className="flex h-80 items-center justify-center rounded bg-slate-100 text-6xl font-bold text-slate-400">
-        {product.brand.slice(0, 2).toUpperCase()}
-      </div>
+      <ProductImage product={product} size={320} preload />
       <div className="space-y-4">
         <Link href="/catalog" className="text-sm text-indigo-700 hover:underline" data-testid="back-to-catalog">
           &larr; Back to catalog

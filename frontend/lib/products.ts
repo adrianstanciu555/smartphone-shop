@@ -16,6 +16,8 @@ export type Product = {
   rating: number;
   availability: Availability;
   available: number;
+  imageUrl: string | null;
+  imageAlt: string | null;
 };
 
 type ProductRow = {
@@ -28,15 +30,21 @@ type ProductRow = {
   rating: string;
   availability: Availability;
   available: number;
+  image_url: string | null;
+  image_alt: string | null;
 };
 
 const SELECT_PRODUCT = `
   SELECT p.id, p.sku, p.name, b.name AS brand, p.category, p.price, p.rating,
-         pa.availability, coalesce(s.quantity_available, 0) AS available
+         pa.availability, coalesce(s.quantity_available, 0) AS available,
+         img.url AS image_url, img.alt_text AS image_alt
   FROM products p
   JOIN brands b ON b.id = p.brand_id
   JOIN product_availability pa ON pa.product_id = p.id
-  LEFT JOIN stock_levels s ON s.product_id = p.id`;
+  LEFT JOIN stock_levels s ON s.product_id = p.id
+  LEFT JOIN LATERAL (
+    SELECT url, alt_text FROM product_images WHERE product_id = p.id ORDER BY position LIMIT 1
+  ) img ON true`;
 
 function toProduct(row: ProductRow): Product {
   return {
@@ -49,6 +57,8 @@ function toProduct(row: ProductRow): Product {
     rating: Number(row.rating),
     availability: row.availability,
     available: Number(row.available),
+    imageUrl: row.image_url,
+    imageAlt: row.image_alt,
   };
 }
 

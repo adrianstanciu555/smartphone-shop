@@ -85,6 +85,33 @@ test.describe("Catalog", () => {
     await expect(productPage.addToCartButton).toBeEnabled();
   });
 
+  test("every product card has an image that is served as a small file", async ({ catalogPage, page }) => {
+    await catalogPage.goto();
+
+    await expect(catalogPage.productImages).toHaveCount(CATALOG.totalProducts);
+    const sources = new Set<string>();
+    for (const image of await catalogPage.productImages.all()) {
+      await expect(image).toHaveAttribute("alt", /^(Photo|Illustration) of (the|a) /);
+      sources.add((await image.getAttribute("src"))!);
+    }
+    for (const src of sources) {
+      const response = await page.request.get(src);
+      expect(response.status(), src).toBe(200);
+      expect(response.headers()["content-type"], src).toMatch(/^image\/(webp|svg\+xml)/);
+      expect((await response.body()).length, src).toBeLessThan(30_000);
+    }
+  });
+
+  test("the product page shows the phone model photo", async ({ productPage, db }) => {
+    const product = await db.getProductByName(PRODUCTS.smartphone);
+
+    await productPage.goto(product.id);
+
+    await expect(productPage.image).toHaveAttribute("alt", "Photo of the Google Pixel 8");
+    await expect(productPage.image).toHaveAttribute("src", "/products/phones/google-pixel-8.webp");
+    await expect.poll(() => productPage.image.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
+  });
+
   test("out-of-stock products cannot be added to the cart", async ({ productPage, db }) => {
     const product = await db.getProductByName(PRODUCTS.outOfStock);
 
